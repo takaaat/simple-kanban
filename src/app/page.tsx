@@ -35,6 +35,12 @@ export default function Home() {
     setEditing(id);
   }
 
+  function handleDelete(id: number) {
+    setKanban(kanban.map((area) => {
+      return { ...area, tasks: area.tasks.filter((task) => task.id !== id) };
+    }));
+  }
+
   function unFocus() {
     setEditing(-1);
   }
@@ -56,7 +62,7 @@ export default function Home() {
         return (
           <CardBox name={area.name} key={area.id} onAdd={() => addTask(area, "aaa")}>
             {area.tasks.map((task) => {
-              return <TaskCard key={task.id} task={task} editing={editing} onClick={() => setEditingFocus(task.id)} unFocus={unFocus} onChange={editTask} />;
+              return <TaskCard key={task.id} task={task} editing={editing} onClick={() => setEditingFocus(task.id)} unFocus={unFocus} onChange={editTask} handleDelete={() => handleDelete(task.id)} />;
             })}
           </CardBox>
         );

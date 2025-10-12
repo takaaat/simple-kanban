@@ -7,9 +7,10 @@ type Props = {
   onClick: () => void;
   onChange: (targetTask: Task, newName: string) => void;
   unFocus: () => void;
+  handleDelete: (taskId: number) => void;
 };
 
-export function TaskCard({ unFocus, task, editing, onClick, onChange }: Props) {
+export function TaskCard({ unFocus, task, editing, onClick, onChange, handleDelete }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleBlur = () => {
@@ -23,12 +24,15 @@ export function TaskCard({ unFocus, task, editing, onClick, onChange }: Props) {
   }, [editing, task.id]);
 
   return (
-    <button type="button" onClick={onClick} className="bg-white w-full text-lg border-2 p-2 mb-2 cursor-pointer text-left">
+    <div className="bg-white w-full text-lg border-2 mb-2">
         {(task.id === editing) ? 
-          <input ref={inputRef} value={task.name} onChange={(e) => onChange(task, e.target.value)} className="w-full"  onBlur={handleBlur} />
+          <input ref={inputRef} value={task.name} onChange={(e) => onChange(task, e.target.value)} className="w-full p-2"  onBlur={handleBlur} />
          : 
-        <div>{task.name}</div>
+        <div className="flex justify-between">
+          <button onClick={onClick} className="text-left w-full cursor-pointer p-2">{task.name}</button>
+          <button type="button" className="bg-amber-200 w-10 cursor-pointer" onClick={() => handleDelete(task.id)}>D</button>
+        </div>
          }
-    </button>
+    </div>
   );
 }
