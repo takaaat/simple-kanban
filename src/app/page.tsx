@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState } from "react";
 import { CardBox } from "@/components/CardBox";
@@ -17,18 +17,23 @@ export default function Home() {
     },
     { id: 1, name: "area2", tasks: [{ id: 2, name: "taskname3" }] },
   ];
- 
+
   const [kanban, setKanban] = useState<CardArea[]>(data);
   const [editing, setEditing] = useState<number>(-1);
 
   function addTask(area: CardArea, name: string) {
-    const count = data.reduce((prev, value) => {return prev + value.tasks.length;}, 0);
-    setKanban(kanban.map((currentArea) => {
-      if (currentArea.id === area.id) {
-        return {...currentArea, tasks: [...currentArea.tasks, {id: count+1, name: name}]};
-      }
-      return currentArea;
-    }));
+    const newId = Date.now();
+    setKanban(
+      kanban.map((currentArea) => {
+        if (currentArea.id === area.id) {
+          return {
+            ...currentArea,
+            tasks: [...currentArea.tasks, { id: newId, name: name }],
+          };
+        }
+        return currentArea;
+      }),
+    );
   }
 
   function setEditingFocus(id: number) {
@@ -36,9 +41,11 @@ export default function Home() {
   }
 
   function handleDelete(id: number) {
-    setKanban(kanban.map((area) => {
-      return { ...area, tasks: area.tasks.filter((task) => task.id !== id) };
-    }));
+    setKanban(
+      kanban.map((area) => {
+        return { ...area, tasks: area.tasks.filter((task) => task.id !== id) };
+      }),
+    );
   }
 
   function unFocus() {
@@ -46,23 +53,42 @@ export default function Home() {
   }
 
   function editTask(targetTask: Task, newName: string) {
-    setKanban(kanban.map((currentArea) => {
-      return {...currentArea, tasks: currentArea.tasks.map((task) => {
-        if (task === targetTask) {
-          return {...task, name: newName};
-        }
-        return task;
-      })};
-    }));
+    setKanban(
+      kanban.map((currentArea) => {
+        return {
+          ...currentArea,
+          tasks: currentArea.tasks.map((task) => {
+            if (task === targetTask) {
+              return { ...task, name: newName };
+            }
+            return task;
+          }),
+        };
+      }),
+    );
   }
 
   return (
     <div className="p-5 flex gap-5 overflow-x-auto w-full">
       {kanban.map((area) => {
         return (
-          <CardBox name={area.name} key={area.id} onAdd={() => addTask(area, "aaa")}>
+          <CardBox
+            name={area.name}
+            key={area.id}
+            onAdd={() => addTask(area, "aaa")}
+          >
             {area.tasks.map((task) => {
-              return <TaskCard key={task.id} task={task} editing={editing} onClick={() => setEditingFocus(task.id)} unFocus={unFocus} onChange={editTask} handleDelete={() => handleDelete(task.id)} />;
+              return (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  editing={editing}
+                  onClick={() => setEditingFocus(task.id)}
+                  unFocus={unFocus}
+                  onChange={editTask}
+                  handleDelete={() => handleDelete(task.id)}
+                />
+              );
             })}
           </CardBox>
         );
