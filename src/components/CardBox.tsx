@@ -1,10 +1,10 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react'
 
 type Props = {
-  name: string;
-  onAdd: () => void;
-  children?: ReactNode;
-};
+  name: string
+  onAdd: () => void
+  children?: ReactNode
+}
 
 export function CardBox({ name, onAdd, children }: Props) {
   return (
@@ -19,5 +19,5 @@ export function CardBox({ name, onAdd, children }: Props) {
         + add
       </button>
     </div>
-  );
+  )
 }

@@ -1,14 +1,14 @@
-import { useEffect, useRef } from "react";
-import type { Task } from "@/types/types";
+import { useEffect, useRef } from 'react'
+import type { Task } from '@/types/types'
 
 type Props = {
-  task: Task;
-  editing: number;
-  onClick: () => void;
-  onChange: (targetTask: Task, newName: string) => void;
-  unFocus: () => void;
-  handleDelete: (taskId: number) => void;
-};
+  task: Task
+  editing: number
+  onClick: () => void
+  onChange: (targetTask: Task, newName: string) => void
+  unFocus: () => void
+  handleDelete: (taskId: number) => void
+}
 
 export function TaskCard({
   unFocus,
@@ -18,17 +18,17 @@ export function TaskCard({
   onChange,
   handleDelete,
 }: Props) {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const handleBlur = () => {
-    unFocus();
-  };
+    unFocus()
+  }
 
   useEffect(() => {
     if (task.id === editing && inputRef.current) {
-      inputRef.current.focus();
+      inputRef.current.focus()
     }
-  }, [editing, task.id]);
+  }, [editing, task.id])
 
   return (
     <div className="bg-white w-full text-lg border-2 mb-2">
@@ -58,5 +58,5 @@ export function TaskCard({
         </div>
       )}
     </div>
-  );
+  )
 }

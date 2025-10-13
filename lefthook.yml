@@ -1,0 +1,12 @@
+pre-commit:
+  commands:
+    fix:
+      run: pnpm run fix
+
+    git-update:
+      run: git update-index --again
+
+pre-push:
+  commands:
+    fix:
+      run: pnpm run fix
