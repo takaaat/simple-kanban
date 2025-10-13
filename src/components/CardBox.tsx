@@ -1,14 +1,23 @@
-import type { ReactNode } from 'react'
+import { useDroppable } from '@dnd-kit/core';
+import type { ReactNode } from 'react';
 
 type Props = {
-  name: string
-  onAdd: () => void
-  children?: ReactNode
-}
+  name: string;
+  id: number;
+  onAdd: () => void;
+  children?: ReactNode;
+};
 
-export function CardBox({ name, onAdd, children }: Props) {
+export function CardBox({ name, id, onAdd, children }: Props) {
+  const { isOver, setNodeRef } = useDroppable({
+    id: id,
+  });
+
   return (
-    <div className="bg-gray-100 w-100 h-200 flex-none border-2 p-2">
+    <div
+      ref={setNodeRef}
+      className={`w-100 h-200 flex-none border-2 p-2 ${isOver ? 'bg-blue-200' : 'bg-gray-100'}`}
+    >
       <div className="pb-2">{name}</div>
       {children}
       <button
@@ -19,5 +28,5 @@ export function CardBox({ name, onAdd, children }: Props) {
         + add
       </button>
     </div>
-  )
+  );
 }

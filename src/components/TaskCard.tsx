@@ -1,37 +1,54 @@
-import { useEffect, useRef } from 'react'
-import type { Task } from '@/types/types'
+import { useEffect, useRef } from 'react';
+import type { Task } from '@/types/types';
+import { useDraggable } from '@dnd-kit/core';
 
 type Props = {
-  task: Task
-  editing: number
-  onClick: () => void
-  onChange: (targetTask: Task, newName: string) => void
-  unFocus: () => void
-  handleDelete: (taskId: number) => void
-}
+  task: Task;
+  editing: number;
+  id: number;
+  onClick: () => void;
+  onChange: (targetTask: Task, newName: string) => void;
+  unFocus: () => void;
+  handleDelete: (taskId: number) => void;
+};
 
 export function TaskCard({
   unFocus,
+  id,
   task,
   editing,
   onClick,
   onChange,
   handleDelete,
 }: Props) {
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: id,
+  });
+  const style = transform
+    ? {
+        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+      }
+    : undefined;
 
   const handleBlur = () => {
-    unFocus()
-  }
+    unFocus();
+  };
 
   useEffect(() => {
     if (task.id === editing && inputRef.current) {
-      inputRef.current.focus()
+      inputRef.current.focus();
     }
-  }, [editing, task.id])
+  }, [editing, task.id]);
 
   return (
-    <div className="bg-white w-full text-lg border-2 mb-2">
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...listeners}
+      {...attributes}
+      className="bg-white w-full text-lg border-2 mb-2"
+    >
       {task.id === editing ? (
         <input
           ref={inputRef}
@@ -58,5 +75,5 @@ export function TaskCard({
         </div>
       )}
     </div>
-  )
+  );
 }
