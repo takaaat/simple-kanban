@@ -4,9 +4,133 @@ import { useState } from 'react';
 import { CardBox } from '@/components/CardBox';
 import { TaskCard } from '@/components/TaskCard';
 import type { CardArea, Task } from '../types/types';
-import { DndContext, DragEndEvent } from '@dnd-kit/core';
+import {
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { SortableItem } from './components/SortableItem';
+import { Item } from './components/Item';
+import Droppable from './components/Droppable';
+import { insertAtIndex, removeAtIndex } from './utils/array';
 
 export default function Home() {
+  const data: CardArea[] = [
+    {
+      id: 0,
+      name: 'area1',
+      tasks: [
+        { id: 0, name: 'taskname' },
+        { id: 1, name: 'taskname2' },
+      ],
+    },
+    { id: 1, name: 'area2', tasks: [{ id: 2, name: 'taskname3' }] },
+  ];
+
+  const [kanban, setKanban] = useState<CardArea[]>(data);
+
+  const [activeId, setActiveId] = useState(null);
+  const activeTask = kanban
+    .flatMap((area) => area.tasks)
+    .find((task) => task.id === activeId);
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  function handleDragStart(event) {
+    const { active } = event;
+    setActiveId(active.id);
+  }
+
+  function handleDragEnd(event) {
+    const { active, over } = event;
+    setActiveId(null);
+  }
+
+  function handleDragCancel(event) {
+    setActiveId(null);
+  }
+
+  function handleDragOver({ active, over }) {
+    const overId = over?.id;
+    if (!overId) {
+      return;
+    }
+    const activeContainer = active.data.current.sortable.index;
+    const overContainer = over.data.current?.sortable.index || over.id;
+    if (activeContainer !== overContainer) {
+      console.log(overContainer);
+      console.log(over.data.current);
+      setKanban((kanban) => {
+        const activeIndex = active.data.current.sortable.index;
+        const overIndex =
+          over.id in kanban
+            ? kanban[overContainer].length + 1
+            : over.data.current.sortable.index;
+        return kanban;
+        return moveBetweenContainers(
+          kanban,
+          activeContainer,
+          activeIndex,
+          overContainer,
+          overIndex,
+          active.id
+        );
+      });
+    }
+  }
+
+  const moveBetweenContainers = (
+    items,
+    activeContainer,
+    activeIndex,
+    overContainer,
+    overIndex,
+    item
+  ) => {
+    return {
+      ...items,
+      [activeContainer]: removeAtIndex(items[activeContainer], activeIndex),
+      [overContainer]: insertAtIndex(items[overContainer], overIndex, item),
+    };
+  };
+
+  return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragEnd={handleDragEnd}
+      onDragStart={handleDragStart}
+      onDragCancel={handleDragCancel}
+      onDragOver={handleDragOver}
+    >
+      <div className="">
+        {kanban.map((area) => {
+          return <Droppable key={area.id} id={area.id} items={area.tasks} />;
+        })}
+      </div>
+      <DragOverlay>
+        {activeId ? <Item id={activeId} task={activeTask!} /> : null}
+      </DragOverlay>
+    </DndContext>
+  );
+}
+
+export function oldHome() {
   const data: CardArea[] = [
     {
       id: 0,

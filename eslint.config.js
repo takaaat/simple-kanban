@@ -1,7 +1,7 @@
-const js = require('@eslint/js')
-const tseslint = require('typescript-eslint')
-const prettier = require('eslint-plugin-prettier')
-const prettierConfig = require('eslint-config-prettier')
+const js = require('@eslint/js');
+const tseslint = require('typescript-eslint');
+const prettier = require('eslint-plugin-prettier');
+const prettierConfig = require('eslint-config-prettier');
 
 module.exports = tseslint.config(
   {
@@ -29,9 +29,9 @@ module.exports = tseslint.config(
       prettier,
     },
     rules: {
-      'prettier/prettier': 'error',
+      'prettier/prettier': ['error', { endOfLine: 'lf' }],
       '@typescript-eslint/no-unused-vars': 'error',
       '@typescript-eslint/no-explicit-any': 'warn',
     },
   }
-)
+);
