@@ -1,5 +1,5 @@
 export type CardArea = {
-  id: number;
+  id: string;
   name: string;
   tasks: Task[];
 };

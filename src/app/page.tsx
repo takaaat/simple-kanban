@@ -28,14 +28,14 @@ import { insertAtIndex, removeAtIndex } from './utils/array';
 export default function Home() {
   const data: CardArea[] = [
     {
-      id: 0,
+      id: '0',
       name: 'area1',
       tasks: [
         { id: 0, name: 'taskname' },
         { id: 1, name: 'taskname2' },
       ],
     },
-    { id: 1, name: 'area2', tasks: [{ id: 2, name: 'taskname3' }] },
+    { id: '1', name: 'area2', tasks: [{ id: 2, name: 'taskname3' }] },
   ];
 
   const [kanban, setKanban] = useState<CardArea[]>(data);
@@ -70,45 +70,51 @@ export default function Home() {
     if (!overId) {
       return;
     }
-    const activeContainer = active.data.current.sortable.index;
-    const overContainer = over.data.current?.sortable.index || over.id;
+    const activeContainer = active.data.current.sortable.containerId;
+    const overContainer = over.data.current?.sortable.containerId || over.id;
     if (activeContainer !== overContainer) {
-      console.log(overContainer);
-      console.log(over.data.current);
       setKanban((kanban) => {
         const activeIndex = active.data.current.sortable.index;
+
         const overIndex =
           over.id in kanban
-            ? kanban[overContainer].length + 1
+            ? kanban.find((area) => area.id === overContainer)!.tasks.length + 1
             : over.data.current.sortable.index;
-        return kanban;
-        return moveBetweenContainers(
-          kanban,
-          activeContainer,
-          activeIndex,
-          overContainer,
-          overIndex,
-          active.id
+
+        // move between containers
+        const newKanban = [...kanban];
+        const sourceAreaIndex = newKanban.findIndex(
+          (area) => area.id === activeContainer
         );
+        const destAreaIndex = newKanban.findIndex(
+          (area) => area.id === overContainer
+        );
+
+        if (sourceAreaIndex === -1 || destAreaIndex === -1) {
+          return kanban;
+        }
+
+        const sourceArea = newKanban[sourceAreaIndex];
+        const movingTask = sourceArea.tasks[activeIndex];
+        if (!movingTask) return kanban;
+
+        const newSourceTasks = [...sourceArea.tasks];
+        newSourceTasks.splice(activeIndex, 1);
+
+        const destArea = newKanban[destAreaIndex];
+        const newDestTasks = [...destArea.tasks];
+        const insertIndex = Math.min(
+          Math.max(0, overIndex),
+          newDestTasks.length
+        );
+        newDestTasks.splice(insertIndex, 0, movingTask);
+        newKanban[sourceAreaIndex] = { ...sourceArea, tasks: newSourceTasks };
+        newKanban[destAreaIndex] = { ...destArea, tasks: newDestTasks };
+
+        return newKanban;
       });
     }
   }
-
-  const moveBetweenContainers = (
-    items,
-    activeContainer,
-    activeIndex,
-    overContainer,
-    overIndex,
-    item
-  ) => {
-    return {
-      ...items,
-      [activeContainer]: removeAtIndex(items[activeContainer], activeIndex),
-      [overContainer]: insertAtIndex(items[overContainer], overIndex, item),
-    };
-  };
-
   return (
     <DndContext
       sensors={sensors}
