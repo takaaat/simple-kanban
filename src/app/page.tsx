@@ -25,6 +25,7 @@ import {
 import { SortableItem } from './components/SortableItem';
 import { Item } from './components/Item';
 import Droppable from './components/Droppable';
+import { createFromNextReadableStream } from 'next/dist/client/components/router-reducer/fetch-server-response';
 
 export default function Home() {
   const data: CardArea[] = [
@@ -62,14 +63,21 @@ export default function Home() {
     setActiveId(null);
   }
 
-  function handleDragEnd(event: DragEndEvent) {
+  function handleDragEnd({ active, over }: { active: any; over: any }) {
+    setKanban((prevKanban) =>
+      moveTaskBetweenKanban({ active, over, kanban: prevKanban })
+    );
     setActiveId(null);
   }
 
-  function handleDragOver({ active, over }) {
-    const overId = over?.id;
-    if (!overId) {
-      return;
+  function moveTaskBetweenKanban(params: {
+    active: any;
+    over: any;
+    kanban: CardArea[];
+  }): CardArea[] {
+    const { active, over, kanban } = params;
+    if (!over) {
+      return kanban;
     }
     const activeContainer = active.data.current.sortable.containerId;
     const overContainer = over.data.current?.sortable.containerId || over.id;
@@ -79,32 +87,57 @@ export default function Home() {
         ? kanban.find((area) => area.id === overContainer)!.tasks.length + 1
         : over.data.current.sortable.index;
 
-      setKanban((kanban) => {
-        let newKanban: CardArea[];
-        if (activeContainer === overContainer) {
-          const currentArea = kanban.find(
-            (area) => area.id === activeContainer
-          );
-          if (!currentArea) {
-            return kanban;
-          }
-          newKanban = kanban.map((area) => {
-            if (area.id !== currentArea.id) {
-              return area;
-            }
-            return {
-              ...area,
-              tasks: arrayMove(area.tasks, activeIndex, overIndex),
-            };
-          });
-          return newKanban;
-        } else {
+      let newKanban: CardArea[];
+      if (activeContainer === overContainer) {
+        const currentArea = kanban.find((area) => area.id === activeContainer);
+        if (!currentArea) {
           return kanban;
         }
-      });
+        newKanban = kanban.map((area) => {
+          if (area.id !== currentArea.id) {
+            return area;
+          }
+          return {
+            ...area,
+            tasks: arrayMove(area.tasks, activeIndex, overIndex),
+          };
+        });
+        return newKanban;
+      } else {
+        const currentArea = kanban.find((area) => area.id === activeContainer);
+        const currentActiveTask = currentArea
+          ? currentArea.tasks[activeIndex]
+          : undefined;
+        const newKanban = kanban.map((area) => {
+          if (area.id === activeContainer) {
+            return {
+              ...area,
+              tasks: area.tasks.filter((_, i) => i !== activeIndex),
+            };
+          }
+          if (area.id === overContainer) {
+            const newTasks = [...area.tasks];
+            newTasks.splice(overIndex, 0, currentActiveTask!);
+            return {
+              ...area,
+              tasks: newTasks,
+            };
+          }
+          return area;
+        });
+        return newKanban;
+      }
     }
+    return kanban;
+  }
+
+  function handleDragOver({ active, over }: { active: any; over: any }) {
+    setKanban((prevKanban) =>
+      moveTaskBetweenKanban({ active, over, kanban: prevKanban })
+    );
     setActiveId(null);
   }
+
   return (
     <DndContext
       sensors={sensors}
@@ -113,6 +146,7 @@ export default function Home() {
       onDragStart={handleDragStart}
       onDragCancel={handleDragCancel}
       onDragOver={handleDragOver}
+      id="unique-dnd-context-id"
     >
       <div className="">
         {kanban.map((area) => {

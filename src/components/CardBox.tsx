@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 
 type Props = {
   name: string;
-  id: number;
+  id: string;
   onAdd: () => void;
   children?: ReactNode;
 };
