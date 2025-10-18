@@ -4,7 +4,14 @@ import { CSS } from '@dnd-kit/utilities';
 import { Item } from './Item';
 import { Task } from '@/types/types';
 
-export function SortableItem(props: { task: Task }) {
+export function SortableItem(props: {
+  task: Task;
+  editing: number;
+  onClick: () => void;
+  unFocus: () => void;
+  onChange: () => void;
+  handleDelete: () => void;
+}) {
   const {
     attributes,
     listeners,
@@ -21,12 +28,17 @@ export function SortableItem(props: { task: Task }) {
   };
 
   return (
-    <Item
-      task={props.task}
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-    />
+    <div ref={setNodeRef} style={style}>
+      <Item
+        task={props.task}
+        editing={props.editing}
+        onClick={props.onClick}
+        unFocus={props.unFocus}
+        onChange={props.onChange}
+        handleDelete={props.handleDelete}
+        {...attributes}
+        {...listeners}
+      />
+    </div>
   );
 }
