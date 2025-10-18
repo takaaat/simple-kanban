@@ -9,7 +9,7 @@ export function SortableItem(props: {
   editing: number;
   onClick: () => void;
   unFocus: () => void;
-  onChange: () => void;
+  onTaskChange: (targetTask: Task, newName: string) => void;
   handleDelete: () => void;
 }) {
   const {
@@ -34,7 +34,7 @@ export function SortableItem(props: {
         editing={props.editing}
         onClick={props.onClick}
         unFocus={props.unFocus}
-        onChange={props.onChange}
+        onTaskChange={props.onTaskChange}
         handleDelete={props.handleDelete}
         {...attributes}
         {...listeners}

@@ -1,32 +1,24 @@
 'use client';
 
 import { useState } from 'react';
-import { CardBox } from '@/components/CardBox';
-import { TaskCard } from '@/components/TaskCard';
 import type { CardArea, Task } from '../types/types';
 import {
   closestCenter,
   DndContext,
-  DragCancelEvent,
   DragEndEvent,
+  DragOverEvent,
   DragOverlay,
   DragStartEvent,
   KeyboardSensor,
   MouseSensor,
-  PointerSensor,
   useSensor,
   useSensors,
+  type Active,
+  type Over,
 } from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { SortableItem } from './components/SortableItem';
+import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { Item } from './components/Item';
 import Droppable from './components/Droppable';
-import { createFromNextReadableStream } from 'next/dist/client/components/router-reducer/fetch-server-response';
 
 export default function Home() {
   const data: CardArea[] = [
@@ -44,12 +36,13 @@ export default function Home() {
 
   const [kanban, setKanban] = useState<CardArea[]>(data);
   const [editing, setEditing] = useState<number>(-1);
+  const [activeId, setActiveId] = useState<number | string | null>(null);
 
-  function addTask(area: CardArea, name: string) {
+  function addTask(areaId: string, name: string = 'New Task') {
     const newId = Date.now();
     setKanban(
       kanban.map((currentArea) => {
-        if (currentArea.id === area.id) {
+        if (currentArea.id === areaId) {
           return {
             ...currentArea,
             tasks: [...currentArea.tasks, { id: newId, name: name }],
@@ -95,7 +88,6 @@ export default function Home() {
     );
   }
 
-  const [activeId, setActiveId] = useState(null);
   const activeTask = kanban
     .flatMap((area) => area.tasks)
     .find((task) => task.id === activeId);
@@ -106,16 +98,14 @@ export default function Home() {
     })
   );
 
-  function handleDragStart(event: DragStartEvent) {
-    const { active } = event;
+  function handleDragStart({ active }: DragStartEvent) {
     setActiveId(active.id);
   }
-
-  function handleDragCancel(event: DragCancelEvent) {
+  function handleDragCancel() {
     setActiveId(null);
   }
 
-  function handleDragEnd({ active, over }: { active: any; over: any }) {
+  function handleDragEnd({ active, over }: DragEndEvent) {
     setKanban((prevKanban) =>
       moveTaskBetweenKanban({ active, over, kanban: prevKanban })
     );
@@ -123,12 +113,12 @@ export default function Home() {
   }
 
   function moveTaskBetweenKanban(params: {
-    active: any;
-    over: any;
+    active: Active;
+    over: Over | null;
     kanban: CardArea[];
   }): CardArea[] {
     const { active, over, kanban } = params;
-    if (!over) {
+    if (over === null || !active.data.current) {
       return kanban;
     }
     const activeContainer = active.data.current.sortable.containerId;
@@ -137,7 +127,7 @@ export default function Home() {
       const activeIndex = active.data.current.sortable.index;
       const overIndex = kanban.some((area) => area.id === over.id)
         ? kanban.find((area) => area.id === overContainer)!.tasks.length + 1
-        : over.data.current.sortable.index;
+        : over.data.current!.sortable.index;
 
       let newKanban: CardArea[];
       if (activeContainer === overContainer) {
@@ -183,7 +173,7 @@ export default function Home() {
     return kanban;
   }
 
-  function handleDragOver({ active, over }: { active: any; over: any }) {
+  function handleDragOver({ active, over }: DragOverEvent) {
     setKanban((prevKanban) =>
       moveTaskBetweenKanban({ active, over, kanban: prevKanban })
     );
@@ -209,8 +199,9 @@ export default function Home() {
               editing={editing}
               onClick={setEditingFocus}
               unFocus={unFocus}
-              onChange={editTask}
+              onTaskChange={editTask}
               handleDelete={handleDelete}
+              addTask={addTask}
             />
           );
         })}
@@ -218,12 +209,11 @@ export default function Home() {
       <DragOverlay>
         {activeId !== null ? (
           <Item
-            id={activeId}
             task={activeTask!}
             editing={-1}
             onClick={() => {}}
             unFocus={() => {}}
-            onChange={() => {}}
+            onTaskChange={() => {}}
             handleDelete={() => {}}
           />
         ) : null}

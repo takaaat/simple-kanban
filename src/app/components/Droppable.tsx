@@ -4,6 +4,18 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { SortableItem } from './SortableItem';
+import { Task } from '@/types/types';
+
+type Props = {
+  id: string;
+  items: Task[];
+  editing: number;
+  onClick: (id: number) => void;
+  unFocus: () => void;
+  onTaskChange: (targetTask: Task, newName: string) => void;
+  handleDelete: (id: number) => void;
+  addTask: (areaId: string) => void;
+};
 
 const Droppable = ({
   id,
@@ -11,9 +23,10 @@ const Droppable = ({
   editing,
   onClick,
   unFocus,
-  onChange,
+  onTaskChange,
   handleDelete,
-}) => {
+  addTask,
+}: Props) => {
   const { isOver, setNodeRef } = useDroppable({ id: id });
 
   return (
@@ -33,10 +46,18 @@ const Droppable = ({
             editing={editing}
             onClick={() => onClick(item.id)}
             unFocus={unFocus}
-            onChange={onChange}
+            onTaskChange={onTaskChange}
             handleDelete={() => handleDelete(item.id)}
           />
         ))}
+        <button
+          className="w-full text-lg border-2 mb-2 text-center bg-white cursor-pointer"
+          onClick={() => {
+            addTask(id);
+          }}
+        >
+          + Add
+        </button>
       </div>
     </SortableContext>
   );

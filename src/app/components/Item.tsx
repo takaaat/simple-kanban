@@ -6,14 +6,14 @@ type ItemProps = React.HTMLAttributes<HTMLDivElement> & {
   editing: number;
   onClick: () => void;
   unFocus: () => void;
-  onChange: (targetTask: Task, newName: string) => void;
+  onTaskChange: (targetTask: Task, newName: string) => void;
   handleDelete: () => void;
   children?: React.ReactNode;
 };
 
 export const Item = forwardRef<HTMLDivElement, ItemProps>(
   (
-    { task, editing, onClick, unFocus, onChange, handleDelete, ...props },
+    { task, editing, onClick, unFocus, onTaskChange, handleDelete, ...props },
     ref
   ) => {
     const inputRef = useRef<HTMLInputElement>(null);
@@ -38,7 +38,7 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
           <input
             ref={inputRef}
             value={task.name}
-            onChange={(e) => onChange(task, e.target.value)}
+            onChange={(e) => onTaskChange(task, e.target.value)}
             className="w-full p-2"
             onBlur={handleBlur}
           />
