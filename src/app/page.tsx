@@ -135,7 +135,6 @@ export default function Home() {
     setKanban((prevKanban) =>
       moveTaskBetweenKanban({ active, over, kanban: prevKanban })
     );
-    setActiveId(null);
   }
 
   return (
@@ -148,13 +147,13 @@ export default function Home() {
       onDragOver={handleDragOver}
       id="unique-dnd-context-id"
     >
-      <div className="">
+      <div className="p-5 flex gap-5 overflow-x-auto w-full">
         {kanban.map((area) => {
           return <Droppable key={area.id} id={area.id} items={area.tasks} />;
         })}
       </div>
       <DragOverlay>
-        {activeId ? <Item id={activeId} task={activeTask!} /> : null}
+        {activeId !== null ? <Item id={activeId} task={activeTask!} /> : null}
       </DragOverlay>
     </DndContext>
   );

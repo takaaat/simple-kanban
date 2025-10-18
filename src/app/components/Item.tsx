@@ -9,7 +9,11 @@ type ItemProps = React.HTMLAttributes<HTMLDivElement> & {
 export const Item = forwardRef<HTMLDivElement, ItemProps>(
   ({ task, ...props }, ref) => {
     return (
-      <div {...props} ref={ref} className="p-2 m-3 bg-amber-200">
+      <div
+        {...props}
+        ref={ref}
+        className="bg-white w-full text-lg border-2 mb-2"
+      >
         {task.name}
       </div>
     );

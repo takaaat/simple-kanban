@@ -6,7 +6,7 @@ import {
 import { SortableItem } from './SortableItem';
 
 const Droppable = ({ id, items }) => {
-  const { setNodeRef } = useDroppable({ id: id });
+  const { isOver, setNodeRef } = useDroppable({ id: id });
 
   return (
     <SortableContext
@@ -14,7 +14,10 @@ const Droppable = ({ id, items }) => {
       items={items}
       strategy={verticalListSortingStrategy}
     >
-      <div ref={setNodeRef} className="bg-red-500 p-3 m-2">
+      <div
+        ref={setNodeRef}
+        className={`w-100 h-200 flex-none border-2 p-2 ${isOver ? 'bg-blue-200' : 'bg-gray-100'}`}
+      >
         {items.map((item) => (
           <SortableItem key={item.id} task={item} />
         ))}
