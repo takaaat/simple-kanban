@@ -37,7 +37,7 @@ export function SortableItem(props: {
         onTaskChange={props.onTaskChange}
         handleDelete={props.handleDelete}
         {...attributes}
-        {...listeners}
+        {...(props.task.id === props.editing ? {} : listeners)}
       />
     </div>
   );
