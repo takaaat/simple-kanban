@@ -4,11 +4,11 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { SortableItem } from './SortableItem';
-import { Task } from '@/types/types';
+import { CardArea, Task } from '@/types/types';
 
 type Props = {
+  area: CardArea;
   id: string;
-  items: Task[];
   editing: number;
   onClick: (id: number) => void;
   unFocus: () => void;
@@ -18,9 +18,9 @@ type Props = {
 };
 
 const Droppable = ({
-  id,
-  items,
   editing,
+  area,
+  id,
   onClick,
   unFocus,
   onTaskChange,
@@ -32,28 +32,29 @@ const Droppable = ({
   return (
     <SortableContext
       id={String(id)}
-      items={items}
+      items={area.tasks}
       strategy={verticalListSortingStrategy}
     >
       <div
         ref={setNodeRef}
         className={`w-100 h-200 flex-none border-2 p-2 ${isOver ? 'bg-blue-200' : 'bg-gray-100'}`}
       >
-        {items.map((item) => (
+        <div className="pb-1">{area.name}</div>
+        {area.tasks.map((task) => (
           <SortableItem
-            key={item.id}
-            task={item}
+            key={task.id}
+            task={task}
             editing={editing}
-            onClick={() => onClick(item.id)}
+            onClick={() => onClick(task.id)}
             unFocus={unFocus}
             onTaskChange={onTaskChange}
-            handleDelete={() => handleDelete(item.id)}
+            handleDelete={() => handleDelete(task.id)}
           />
         ))}
         <button
           className="w-full text-lg border-2 mb-2 text-center bg-white cursor-pointer"
           onClick={() => {
-            addTask(id);
+            addTask(area.id);
           }}
         >
           + Add

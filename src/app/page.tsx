@@ -195,7 +195,7 @@ export default function Home() {
             <Droppable
               key={area.id}
               id={area.id}
-              items={area.tasks}
+              area={area}
               editing={editing}
               onClick={setEditingFocus}
               unFocus={unFocus}
