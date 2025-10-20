@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { CardArea, Task } from '../types/types';
 import {
   closestCenter,
@@ -21,22 +21,37 @@ import { Item } from './components/Item';
 import Droppable from './components/Droppable';
 
 export default function Home() {
-  const data: CardArea[] = [
-    {
-      id: '0',
-      name: 'area1',
-      tasks: [
-        { id: 0, name: 'taskname' },
-        { id: 1, name: 'taskname2' },
-      ],
-    },
-    { id: '1', name: 'area2', tasks: [{ id: 2, name: 'taskname3' }] },
-    { id: '2', name: 'area3', tasks: [{ id: 3, name: 'taskname4' }] },
-  ];
+  const data: CardArea[] = [];
 
   const [kanban, setKanban] = useState<CardArea[]>(data);
   const [editing, setEditing] = useState<number>(-1);
   const [activeId, setActiveId] = useState<number | string | null>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const stored = window.localStorage.getItem('kanbanData');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored) as CardArea[];
+        setKanban(parsed);
+      } catch (e) {
+        console.error('Failed parsing stored kanban data.', e);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      if (kanban === null) {
+        window.localStorage.removeItem('kanbanData');
+      } else {
+        window.localStorage.setItem('kanbanData', JSON.stringify(kanban));
+      }
+    } catch (e) {
+      console.error('Failed setting localStorage', e);
+    }
+  }, [kanban]);
 
   function addTask(areaId: string, name: string = 'New Task') {
     const newId = Date.now();
