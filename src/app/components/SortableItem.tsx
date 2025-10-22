@@ -4,14 +4,23 @@ import { CSS } from '@dnd-kit/utilities';
 import { Item } from './Item';
 import { Task } from '@/types/types';
 
-export function SortableItem(props: {
+type Props = {
   task: Task;
   editing: number;
   onClick: () => void;
   unFocus: () => void;
   onTaskChange: (targetTask: Task, newName: string) => void;
   handleDelete: () => void;
-}) {
+};
+
+export function SortableItem({
+  task,
+  editing,
+  onClick,
+  unFocus,
+  onTaskChange,
+  handleDelete,
+}: Props) {
   const {
     attributes,
     listeners,
@@ -19,7 +28,7 @@ export function SortableItem(props: {
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: props.task.id });
+  } = useSortable({ id: task.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -30,14 +39,14 @@ export function SortableItem(props: {
   return (
     <div ref={setNodeRef} style={style}>
       <Item
-        task={props.task}
-        editing={props.editing}
-        onClick={props.onClick}
-        unFocus={props.unFocus}
-        onTaskChange={props.onTaskChange}
-        handleDelete={props.handleDelete}
+        task={task}
+        editing={editing}
+        onClick={onClick}
+        unFocus={unFocus}
+        onTaskChange={onTaskChange}
+        handleDelete={handleDelete}
         {...attributes}
-        {...(props.task.id === props.editing ? {} : listeners)}
+        {...(task.id === editing ? {} : listeners)}
       />
     </div>
   );

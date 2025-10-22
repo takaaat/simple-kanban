@@ -1,7 +1,7 @@
 import { Task } from '@/types/types';
 import React, { forwardRef, useEffect, useRef } from 'react';
 
-type ItemProps = React.HTMLAttributes<HTMLDivElement> & {
+type ItemProps = {
   task: Task;
   editing: number;
   onClick: () => void;
