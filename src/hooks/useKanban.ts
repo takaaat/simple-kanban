@@ -68,6 +68,21 @@ export function useKanban() {
     );
   }
 
+  function deleteArea(areaId: string) {
+    setKanban(kanban.filter((area) => area.id !== areaId));
+  }
+
+  function editArea(areaId: string, newName: string) {
+    setKanban(
+      kanban.map((area) => {
+        if (area.id === areaId) {
+          return { ...area, name: newName };
+        }
+        return area;
+      })
+    );
+  }
+
   function setEditingFocus(id: number) {
     setEditing(id);
   }
@@ -195,6 +210,8 @@ export function useKanban() {
     activeTask,
     addTask,
     addArea,
+    deleteArea,
+    editArea,
     setEditingFocus,
     handleDelete,
     unFocus,

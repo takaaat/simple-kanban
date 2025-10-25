@@ -22,6 +22,8 @@ export default function Home() {
     activeTask,
     addTask,
     addArea,
+    editArea,
+    deleteArea,
     setEditingFocus,
     handleDelete,
     unFocus,
@@ -56,6 +58,8 @@ export default function Home() {
               key={area.id}
               id={area.id}
               area={area}
+              editArea={editArea}
+              deleteArea={deleteArea}
               editing={editing}
               onClick={setEditingFocus}
               unFocus={unFocus}
