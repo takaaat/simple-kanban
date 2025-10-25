@@ -21,6 +21,9 @@ export default function Home() {
     activeId,
     activeTask,
     addTask,
+    addArea,
+    editArea,
+    deleteArea,
     setEditingFocus,
     handleDelete,
     unFocus,
@@ -55,6 +58,8 @@ export default function Home() {
               key={area.id}
               id={area.id}
               area={area}
+              editArea={editArea}
+              deleteArea={deleteArea}
               editing={editing}
               onClick={setEditingFocus}
               unFocus={unFocus}
@@ -64,6 +69,15 @@ export default function Home() {
             />
           );
         })}
+        <button
+          className="rounded border border-neutral-300 px-4 py-3 bg-white text-neutral-600 hover:bg-neutral-100 transition h-7 flex items-center justify-center cursor-pointer"
+          type="button"
+          onClick={() => {
+            addArea();
+          }}
+        >
+          + Area
+        </button>
       </div>
       <DragOverlay>
         {activeId !== null ? (

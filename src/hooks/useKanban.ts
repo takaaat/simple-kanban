@@ -11,7 +11,11 @@ import {
 import { arrayMove } from '@dnd-kit/sortable';
 
 export function useKanban() {
-  const data: CardArea[] = [];
+  const data: CardArea[] = [
+    { id: '0', name: 'todo', tasks: [] },
+    { id: '1', name: 'wip', tasks: [] },
+    { id: '2', name: 'done', tasks: [] },
+  ];
 
   const [kanban, setKanban] = useState<CardArea[]>(data);
   const [editing, setEditing] = useState<number>(-1);
@@ -43,6 +47,12 @@ export function useKanban() {
     }
   }, [kanban]);
 
+  function addArea(name: string = 'New Area') {
+    const newId = Date.now().toString();
+    const newArea: CardArea = { id: newId, name: name, tasks: [] };
+    setKanban([...kanban, newArea]);
+  }
+
   function addTask(areaId: string, name: string = 'New Task') {
     const newId = Date.now();
     setKanban(
@@ -54,6 +64,21 @@ export function useKanban() {
           };
         }
         return currentArea;
+      })
+    );
+  }
+
+  function deleteArea(areaId: string) {
+    setKanban(kanban.filter((area) => area.id !== areaId));
+  }
+
+  function editArea(areaId: string, newName: string) {
+    setKanban(
+      kanban.map((area) => {
+        if (area.id === areaId) {
+          return { ...area, name: newName };
+        }
+        return area;
       })
     );
   }
@@ -184,6 +209,9 @@ export function useKanban() {
     activeId,
     activeTask,
     addTask,
+    addArea,
+    deleteArea,
+    editArea,
     setEditingFocus,
     handleDelete,
     unFocus,
