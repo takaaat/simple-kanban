@@ -47,6 +47,12 @@ export function useKanban() {
     }
   }, [kanban]);
 
+  function addArea(name: string = 'New Area') {
+    const newId = Date.now().toString();
+    const newArea: CardArea = { id: newId, name: name, tasks: [] };
+    setKanban([...kanban, newArea]);
+  }
+
   function addTask(areaId: string, name: string = 'New Task') {
     const newId = Date.now();
     setKanban(
@@ -188,6 +194,7 @@ export function useKanban() {
     activeId,
     activeTask,
     addTask,
+    addArea,
     setEditingFocus,
     handleDelete,
     unFocus,
