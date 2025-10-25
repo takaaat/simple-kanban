@@ -11,7 +11,11 @@ import {
 import { arrayMove } from '@dnd-kit/sortable';
 
 export function useKanban() {
-  const data: CardArea[] = [];
+  const data: CardArea[] = [
+    { id: '0', name: 'todo', tasks: [] },
+    { id: '1', name: 'wip', tasks: [] },
+    { id: '2', name: 'done', tasks: [] },
+  ];
 
   const [kanban, setKanban] = useState<CardArea[]>(data);
   const [editing, setEditing] = useState<number>(-1);
