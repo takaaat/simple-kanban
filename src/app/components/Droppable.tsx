@@ -48,6 +48,7 @@ const Droppable = ({
           <div className="flex gap-2">
             <button
               type="button"
+              className="cursor-pointer underline"
               onClick={() => {
                 const newName = window.prompt('Type new area name:', area.name);
                 if (newName === null) {
@@ -62,6 +63,7 @@ const Droppable = ({
 
             <button
               type="button"
+              className="cursor-pointer underline"
               onClick={() => {
                 if (
                   window.confirm('Are you sure you want to delete this area?')
@@ -86,7 +88,7 @@ const Droppable = ({
           />
         ))}
         <button
-          className="w-full text-lg border-2 mb-2 text-center bg-white cursor-pointer"
+          className="w-full rounded border border-neutral-300 text-neutral-600 hover:bg-neutral-100 transition   mb-2 text-center bg-white cursor-pointer"
           onClick={() => {
             addTask(area.id);
           }}
