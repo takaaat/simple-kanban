@@ -1,5 +1,4 @@
 'use client';
-
 import { useEffect, useState } from 'react';
 import type { CardArea, Task } from '../types/types';
 import {
