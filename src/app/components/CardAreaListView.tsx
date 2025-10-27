@@ -3,7 +3,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { SortableItem } from './SortableItem';
+import { CardAreaView } from './CardAreaView';
 import { CardArea, Task } from '@/types/types';
 
 type Props = {
@@ -19,7 +19,7 @@ type Props = {
   deleteArea: (areaId: string) => void;
 };
 
-const Droppable = ({
+const CardAreaListView = ({
   editing,
   area,
   id,
@@ -77,7 +77,7 @@ const Droppable = ({
           </div>
         </div>
         {area.tasks.map((task) => (
-          <SortableItem
+          <CardAreaView
             key={task.id}
             task={task}
             editing={editing}
@@ -100,4 +100,4 @@ const Droppable = ({
   );
 };
 
-export default Droppable;
+export default CardAreaListView;

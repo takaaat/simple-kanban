@@ -11,7 +11,7 @@ type ItemProps = {
   children?: React.ReactNode;
 };
 
-export const Item = forwardRef<HTMLDivElement, ItemProps>(
+export const TaskCard = forwardRef<HTMLDivElement, ItemProps>(
   (
     { task, editing, onClick, unFocus, onTaskChange, handleDelete, ...props },
     ref

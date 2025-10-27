@@ -10,8 +10,8 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { Item } from './components/Item';
-import Droppable from './components/Droppable';
+import { TaskCard } from './components/TaskCard';
+import CardAreaListView from './components/CardAreaListView';
 import { useKanban } from '../hooks/useKanban';
 
 export default function Home() {
@@ -54,7 +54,7 @@ export default function Home() {
       <div className="p-5 flex gap-5 overflow-x-auto w-full">
         {kanban.map((area) => {
           return (
-            <Droppable
+            <CardAreaListView
               key={area.id}
               id={area.id}
               area={area}
@@ -81,7 +81,7 @@ export default function Home() {
       </div>
       <DragOverlay>
         {activeId !== null ? (
-          <Item
+          <TaskCard
             task={activeTask!}
             editing={-1}
             onClick={() => {}}

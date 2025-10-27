@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Item } from './Item';
+import { TaskCard } from './TaskCard';
 import { Task } from '@/types/types';
 
 type Props = {
@@ -13,7 +13,7 @@ type Props = {
   handleDelete: () => void;
 };
 
-export function SortableItem({
+export function CardAreaView({
   task,
   editing,
   onClick,
@@ -38,7 +38,7 @@ export function SortableItem({
 
   return (
     <div ref={setNodeRef} style={style}>
-      <Item
+      <TaskCard
         task={task}
         editing={editing}
         onClick={onClick}
