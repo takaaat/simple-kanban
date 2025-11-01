@@ -4,16 +4,24 @@ import React, { forwardRef, useEffect, useRef } from 'react';
 type ItemProps = {
   task: Task;
   editing: number;
-  onClick: () => void;
+  onCardClick: () => void;
   unFocus: () => void;
   onTaskChange: (targetTask: Task, newName: string) => void;
-  handleDelete: () => void;
+  handleTaskDelete: () => void;
   children?: React.ReactNode;
 };
 
 export const TaskCard = forwardRef<HTMLDivElement, ItemProps>(
   (
-    { task, editing, onClick, unFocus, onTaskChange, handleDelete, ...props },
+    {
+      task,
+      editing,
+      onCardClick,
+      unFocus,
+      onTaskChange,
+      handleTaskDelete: handleDelete,
+      ...props
+    },
     ref
   ) => {
     const inputRef = useRef<HTMLInputElement>(null);
@@ -45,7 +53,7 @@ export const TaskCard = forwardRef<HTMLDivElement, ItemProps>(
         ) : (
           <div className="flex justify-between">
             <button
-              onClick={onClick}
+              onClick={onCardClick}
               className="text-left w-full cursor-pointer p-2"
             >
               {task.name}

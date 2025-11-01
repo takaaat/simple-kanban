@@ -11,22 +11,22 @@ import {
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { TaskCard } from './components/TaskCard';
-import CardAreaListView from './components/CardAreaListView';
+import Column from './components/Column';
 import { useKanban } from '../hooks/useKanban';
 
 export default function Home() {
   const {
     kanban,
-    editing,
-    activeId,
+    editingTaskId,
+    draggingTaskId,
     activeTask,
     addTask,
     addArea,
     editArea,
     deleteArea,
-    setEditingFocus,
-    handleDelete,
-    unFocus,
+    startEditingTask,
+    deleteTask,
+    stopEditingTask,
     editTask,
     handleDragStart,
     handleDragCancel,
@@ -54,17 +54,17 @@ export default function Home() {
       <div className="p-5 flex gap-5 overflow-x-auto w-full">
         {kanban.map((area) => {
           return (
-            <CardAreaListView
+            <Column
               key={area.id}
               id={area.id}
               area={area}
               editArea={editArea}
               deleteArea={deleteArea}
-              editing={editing}
-              onClick={setEditingFocus}
-              unFocus={unFocus}
+              editing={editingTaskId}
+              onCardClick={startEditingTask}
+              unFocus={stopEditingTask}
               onTaskChange={editTask}
-              handleDelete={handleDelete}
+              handleTaskDelete={deleteTask}
               addTask={addTask}
             />
           );
@@ -80,14 +80,14 @@ export default function Home() {
         </button>
       </div>
       <DragOverlay>
-        {activeId !== null ? (
+        {draggingTaskId !== null ? (
           <TaskCard
             task={activeTask!}
             editing={-1}
-            onClick={() => {}}
+            onCardClick={() => {}}
             unFocus={() => {}}
             onTaskChange={() => {}}
-            handleDelete={() => {}}
+            handleTaskDelete={() => {}}
           />
         ) : null}
       </DragOverlay>

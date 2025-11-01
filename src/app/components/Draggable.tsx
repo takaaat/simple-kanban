@@ -7,19 +7,19 @@ import { Task } from '@/types/types';
 type Props = {
   task: Task;
   editing: number;
-  onClick: () => void;
+  onCardClick: () => void;
   unFocus: () => void;
   onTaskChange: (targetTask: Task, newName: string) => void;
-  handleDelete: () => void;
+  handleTaskDelete: () => void;
 };
 
-export function CardAreaView({
+export function Draggable({
   task,
   editing,
-  onClick,
+  onCardClick,
   unFocus,
   onTaskChange,
-  handleDelete,
+  handleTaskDelete: handleTaskDelete,
 }: Props) {
   const {
     attributes,
@@ -41,10 +41,10 @@ export function CardAreaView({
       <TaskCard
         task={task}
         editing={editing}
-        onClick={onClick}
+        onCardClick={onCardClick}
         unFocus={unFocus}
         onTaskChange={onTaskChange}
-        handleDelete={handleDelete}
+        handleTaskDelete={handleTaskDelete}
         {...attributes}
         {...(task.id === editing ? {} : listeners)}
       />

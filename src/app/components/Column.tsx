@@ -3,32 +3,32 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { CardAreaView } from './CardAreaView';
+import { Draggable } from './Draggable';
 import { CardArea, Task } from '@/types/types';
 
 type Props = {
   area: CardArea;
   id: string;
   editing: number;
-  onClick: (id: number) => void;
+  onCardClick: (id: number) => void;
   unFocus: () => void;
   onTaskChange: (targetTask: Task, newName: string) => void;
-  handleDelete: (id: number) => void;
+  handleTaskDelete: (id: number) => void;
   addTask: (areaId: string) => void;
   editArea: (areaId: string, newName: string) => void;
   deleteArea: (areaId: string) => void;
 };
 
-const CardAreaListView = ({
+const Column = ({
   editing,
   area,
   id,
-  onClick,
+  onCardClick,
   editArea,
   deleteArea,
   unFocus,
   onTaskChange,
-  handleDelete,
+  handleTaskDelete,
   addTask,
 }: Props) => {
   const { isOver, setNodeRef } = useDroppable({ id: id });
@@ -77,14 +77,14 @@ const CardAreaListView = ({
           </div>
         </div>
         {area.tasks.map((task) => (
-          <CardAreaView
+          <Draggable
             key={task.id}
             task={task}
             editing={editing}
-            onClick={() => onClick(task.id)}
+            onCardClick={() => onCardClick(task.id)}
             unFocus={unFocus}
             onTaskChange={onTaskChange}
-            handleDelete={() => handleDelete(task.id)}
+            handleTaskDelete={() => handleTaskDelete(task.id)}
           />
         ))}
         <button
@@ -100,4 +100,4 @@ const CardAreaListView = ({
   );
 };
 
-export default CardAreaListView;
+export default Column;
