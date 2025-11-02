@@ -60,11 +60,11 @@ export default function Home() {
               area={area}
               editArea={editArea}
               deleteArea={deleteArea}
-              editing={editingTaskId}
-              onCardClick={startEditingTask}
-              unFocus={stopEditingTask}
-              onTaskChange={editTask}
-              handleTaskDelete={deleteTask}
+              editingTaskId={editingTaskId}
+              startEditingTask={startEditingTask}
+              stopEditingTask={stopEditingTask}
+              editTask={editTask}
+              deleteTask={deleteTask}
               addTask={addTask}
             />
           );
@@ -83,11 +83,11 @@ export default function Home() {
         {draggingTaskId !== null ? (
           <TaskCard
             task={activeTask!}
-            editing={-1}
-            onCardClick={() => {}}
-            unFocus={() => {}}
-            onTaskChange={() => {}}
-            handleTaskDelete={() => {}}
+            editingTaskId={-1}
+            startEditingTask={() => {}}
+            stopEditingTask={() => {}}
+            editTask={() => {}}
+            deleteTask={() => {}}
           />
         ) : null}
       </DragOverlay>

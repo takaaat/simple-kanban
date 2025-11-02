@@ -216,7 +216,7 @@ export function useKanban() {
     editArea,
     startEditingTask,
     deleteTask,
-    unFocus: stopEditingTask,
+    stopEditingTask,
     editTask,
     handleDragStart,
     handleDragCancel,

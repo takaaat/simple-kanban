@@ -9,26 +9,26 @@ import { CardArea, Task } from '@/types/types';
 type Props = {
   area: CardArea;
   id: string;
-  editing: number;
-  onCardClick: (id: number) => void;
-  unFocus: () => void;
-  onTaskChange: (targetTask: Task, newName: string) => void;
-  handleTaskDelete: (id: number) => void;
+  editingTaskId: number;
+  startEditingTask: (taskId: number) => void;
+  stopEditingTask: () => void;
+  editTask: (targetTask: Task, newName: string) => void;
+  deleteTask: (taskId: number) => void;
   addTask: (areaId: string) => void;
   editArea: (areaId: string, newName: string) => void;
   deleteArea: (areaId: string) => void;
 };
 
 const Column = ({
-  editing,
+  editingTaskId,
   area,
   id,
-  onCardClick,
+  startEditingTask,
   editArea,
   deleteArea,
-  unFocus,
-  onTaskChange,
-  handleTaskDelete,
+  stopEditingTask,
+  editTask,
+  deleteTask,
   addTask,
 }: Props) => {
   const { isOver, setNodeRef } = useDroppable({ id: id });
@@ -80,11 +80,11 @@ const Column = ({
           <Draggable
             key={task.id}
             task={task}
-            editing={editing}
-            onCardClick={() => onCardClick(task.id)}
-            unFocus={unFocus}
-            onTaskChange={onTaskChange}
-            handleTaskDelete={() => handleTaskDelete(task.id)}
+            editingTaskId={editingTaskId}
+            onStartEditingTask={() => startEditingTask(task.id)}
+            onStopEditingTask={stopEditingTask}
+            editTask={editTask}
+            deleteTask={() => deleteTask(task.id)}
           />
         ))}
         <button

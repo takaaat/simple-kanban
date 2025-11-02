@@ -6,20 +6,20 @@ import { Task } from '@/types/types';
 
 type Props = {
   task: Task;
-  editing: number;
-  onCardClick: () => void;
-  unFocus: () => void;
-  onTaskChange: (targetTask: Task, newName: string) => void;
-  handleTaskDelete: () => void;
+  editingTaskId: number;
+  onStartEditingTask: () => void;
+  onStopEditingTask: () => void;
+  editTask: (targetTask: Task, newName: string) => void;
+  deleteTask: () => void;
 };
 
 export function Draggable({
   task,
-  editing,
-  onCardClick,
-  unFocus,
-  onTaskChange,
-  handleTaskDelete: handleTaskDelete,
+  editingTaskId,
+  onStartEditingTask,
+  onStopEditingTask,
+  editTask,
+  deleteTask,
 }: Props) {
   const {
     attributes,
@@ -40,13 +40,13 @@ export function Draggable({
     <div ref={setNodeRef} style={style}>
       <TaskCard
         task={task}
-        editing={editing}
-        onCardClick={onCardClick}
-        unFocus={unFocus}
-        onTaskChange={onTaskChange}
-        handleTaskDelete={handleTaskDelete}
+        editingTaskId={editingTaskId}
+        startEditingTask={onStartEditingTask}
+        stopEditingTask={onStopEditingTask}
+        editTask={editTask}
+        deleteTask={deleteTask}
         {...attributes}
-        {...(task.id === editing ? {} : listeners)}
+        {...(task.id === editingTaskId ? {} : listeners)}
       />
     </div>
   );
