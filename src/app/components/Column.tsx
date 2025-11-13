@@ -5,6 +5,7 @@ import {
 } from '@dnd-kit/sortable';
 import { Draggable } from './Draggable';
 import { CardArea, Task } from '@/types/types';
+import { TaskCard } from './TaskCard';
 
 type Props = {
   area: CardArea;
@@ -79,13 +80,18 @@ const Column = ({
         {area.tasks.map((task) => (
           <Draggable
             key={task.id}
-            task={task}
+            taskId={task.id}
             editingTaskId={editingTaskId}
-            onStartEditingTask={() => startEditingTask(task.id)}
-            onStopEditingTask={stopEditingTask}
-            editTask={editTask}
-            deleteTask={() => deleteTask(task.id)}
-          />
+          >
+            <TaskCard
+              task={task}
+              editingTaskId={editingTaskId}
+              startEditingTask={() => startEditingTask(task.id)}
+              stopEditingTask={stopEditingTask}
+              editTask={editTask}
+              deleteTask={() => deleteTask(task.id)}
+            />
+          </Draggable>
         ))}
         <button
           className="w-full rounded border border-neutral-300 text-neutral-600 hover:bg-neutral-100 transition   mb-2 text-center bg-white cursor-pointer"

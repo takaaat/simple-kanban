@@ -1,7 +1,7 @@
 import { Task } from '@/types/types';
 import React, { forwardRef, useEffect, useRef } from 'react';
 
-type ItemProps = {
+type Props = {
   task: Task;
   editingTaskId: number;
   startEditingTask: () => void;
@@ -11,7 +11,7 @@ type ItemProps = {
   children?: React.ReactNode;
 };
 
-export const TaskCard = forwardRef<HTMLDivElement, ItemProps>(
+export const TaskCard = forwardRef<HTMLDivElement, Props>(
   (
     {
       task,
@@ -20,7 +20,6 @@ export const TaskCard = forwardRef<HTMLDivElement, ItemProps>(
       stopEditingTask,
       editTask,
       deleteTask: handleDelete,
-      ...props
     },
     ref
   ) => {
@@ -37,11 +36,7 @@ export const TaskCard = forwardRef<HTMLDivElement, ItemProps>(
     }, [editingTaskId, task.id]);
 
     return (
-      <div
-        {...props}
-        ref={ref}
-        className="bg-white w-full text-lg border-2 mb-2"
-      >
+      <div ref={ref} className="bg-white w-full text-lg border-2 mb-2">
         {task.id === editingTaskId ? (
           <input
             ref={inputRef}
