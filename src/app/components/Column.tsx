@@ -3,32 +3,33 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { SortableItem } from './SortableItem';
+import { Draggable } from './Draggable';
 import { CardArea, Task } from '@/types/types';
+import { TaskCard } from './TaskCard';
 
 type Props = {
   area: CardArea;
   id: string;
-  editing: number;
-  onClick: (id: number) => void;
-  unFocus: () => void;
-  onTaskChange: (targetTask: Task, newName: string) => void;
-  handleDelete: (id: number) => void;
+  editingTaskId: number;
+  startEditingTask: (taskId: number) => void;
+  stopEditingTask: () => void;
+  editTask: (targetTask: Task, newName: string) => void;
+  deleteTask: (taskId: number) => void;
   addTask: (areaId: string) => void;
   editArea: (areaId: string, newName: string) => void;
   deleteArea: (areaId: string) => void;
 };
 
-const Droppable = ({
-  editing,
+const Column = ({
+  editingTaskId,
   area,
   id,
-  onClick,
+  startEditingTask,
   editArea,
   deleteArea,
-  unFocus,
-  onTaskChange,
-  handleDelete,
+  stopEditingTask,
+  editTask,
+  deleteTask,
   addTask,
 }: Props) => {
   const { isOver, setNodeRef } = useDroppable({ id: id });
@@ -77,15 +78,20 @@ const Droppable = ({
           </div>
         </div>
         {area.tasks.map((task) => (
-          <SortableItem
+          <Draggable
             key={task.id}
-            task={task}
-            editing={editing}
-            onClick={() => onClick(task.id)}
-            unFocus={unFocus}
-            onTaskChange={onTaskChange}
-            handleDelete={() => handleDelete(task.id)}
-          />
+            taskId={task.id}
+            editingTaskId={editingTaskId}
+          >
+            <TaskCard
+              task={task}
+              editingTaskId={editingTaskId}
+              startEditingTask={() => startEditingTask(task.id)}
+              stopEditingTask={stopEditingTask}
+              editTask={editTask}
+              deleteTask={() => deleteTask(task.id)}
+            />
+          </Draggable>
         ))}
         <button
           className="w-full rounded border border-neutral-300 text-neutral-600 hover:bg-neutral-100 transition   mb-2 text-center bg-white cursor-pointer"
@@ -100,4 +106,4 @@ const Droppable = ({
   );
 };
 
-export default Droppable;
+export default Column;

@@ -10,23 +10,23 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { Item } from './components/Item';
-import Droppable from './components/Droppable';
+import { TaskCard } from './components/TaskCard';
+import Column from './components/Column';
 import { useKanban } from '../hooks/useKanban';
 
 export default function Home() {
   const {
     kanban,
-    editing,
-    activeId,
+    editingTaskId,
+    draggingTaskId,
     activeTask,
     addTask,
     addArea,
     editArea,
     deleteArea,
-    setEditingFocus,
-    handleDelete,
-    unFocus,
+    startEditingTask,
+    deleteTask,
+    stopEditingTask,
     editTask,
     handleDragStart,
     handleDragCancel,
@@ -54,17 +54,17 @@ export default function Home() {
       <div className="p-5 flex gap-5 overflow-x-auto w-full">
         {kanban.map((area) => {
           return (
-            <Droppable
+            <Column
               key={area.id}
               id={area.id}
               area={area}
               editArea={editArea}
               deleteArea={deleteArea}
-              editing={editing}
-              onClick={setEditingFocus}
-              unFocus={unFocus}
-              onTaskChange={editTask}
-              handleDelete={handleDelete}
+              editingTaskId={editingTaskId}
+              startEditingTask={startEditingTask}
+              stopEditingTask={stopEditingTask}
+              editTask={editTask}
+              deleteTask={deleteTask}
               addTask={addTask}
             />
           );
@@ -80,14 +80,14 @@ export default function Home() {
         </button>
       </div>
       <DragOverlay>
-        {activeId !== null ? (
-          <Item
+        {draggingTaskId !== null ? (
+          <TaskCard
             task={activeTask!}
-            editing={-1}
-            onClick={() => {}}
-            unFocus={() => {}}
-            onTaskChange={() => {}}
-            handleDelete={() => {}}
+            editingTaskId={-1}
+            startEditingTask={() => {}}
+            stopEditingTask={() => {}}
+            editTask={() => {}}
+            deleteTask={() => {}}
           />
         ) : null}
       </DragOverlay>

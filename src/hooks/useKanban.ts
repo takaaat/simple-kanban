@@ -11,15 +11,17 @@ import {
 import { arrayMove } from '@dnd-kit/sortable';
 
 export function useKanban() {
-  const data: CardArea[] = [
+  const initialKanbanData: CardArea[] = [
     { id: '0', name: 'todo', tasks: [] },
     { id: '1', name: 'wip', tasks: [] },
     { id: '2', name: 'done', tasks: [] },
   ];
 
-  const [kanban, setKanban] = useState<CardArea[]>(data);
-  const [editing, setEditing] = useState<number>(-1);
-  const [activeId, setActiveId] = useState<number | string | null>(null);
+  const [kanban, setKanban] = useState<CardArea[]>(initialKanbanData);
+  const [editingTaskId, setEditingTaskId] = useState<number>(-1);
+  const [draggingTaskId, setDraggingTaskId] = useState<number | string | null>(
+    null
+  );
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -83,11 +85,11 @@ export function useKanban() {
     );
   }
 
-  function setEditingFocus(id: number) {
-    setEditing(id);
+  function startEditingTask(id: number) {
+    setEditingTaskId(id);
   }
 
-  function handleDelete(taskId: number) {
+  function deleteTask(taskId: number) {
     setKanban(
       kanban.map((area) => {
         return {
@@ -98,8 +100,8 @@ export function useKanban() {
     );
   }
 
-  function unFocus() {
-    setEditing(-1);
+  function stopEditingTask() {
+    setEditingTaskId(-1);
   }
 
   function editTask(targetTask: Task, newName: string) {
@@ -120,20 +122,20 @@ export function useKanban() {
 
   const activeTask = kanban
     .flatMap((area) => area.tasks)
-    .find((task) => task.id === activeId);
+    .find((task) => task.id === draggingTaskId);
 
   function handleDragStart({ active }: DragStartEvent) {
-    setActiveId(active.id);
+    setDraggingTaskId(active.id);
   }
   function handleDragCancel() {
-    setActiveId(null);
+    setDraggingTaskId(null);
   }
 
   function handleDragEnd({ active, over }: DragEndEvent) {
     setKanban((prevKanban) =>
       moveTaskBetweenKanban({ active, over, kanban: prevKanban })
     );
-    setActiveId(null);
+    setDraggingTaskId(null);
   }
 
   function moveTaskBetweenKanban(params: {
@@ -205,16 +207,16 @@ export function useKanban() {
 
   return {
     kanban,
-    editing,
-    activeId,
+    editingTaskId,
+    draggingTaskId,
     activeTask,
     addTask,
     addArea,
     deleteArea,
     editArea,
-    setEditingFocus,
-    handleDelete,
-    unFocus,
+    startEditingTask,
+    deleteTask,
+    stopEditingTask,
     editTask,
     handleDragStart,
     handleDragCancel,
