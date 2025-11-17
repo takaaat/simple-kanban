@@ -10,7 +10,7 @@ import {
 } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 
-export function useKanban() {
+export function useKanban(kanbanName: string) {
   const initialKanbanData: CardArea[] = [
     { id: '0', name: 'todo', tasks: [] },
     { id: '1', name: 'wip', tasks: [] },
@@ -25,7 +25,7 @@ export function useKanban() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const stored = window.localStorage.getItem('kanbanData');
+    const stored = window.localStorage.getItem(kanbanName);
     if (stored) {
       try {
         const parsed = JSON.parse(stored) as CardArea[];
@@ -40,9 +40,9 @@ export function useKanban() {
     if (typeof window === 'undefined') return;
     try {
       if (kanban === null) {
-        window.localStorage.removeItem('kanbanData');
+        window.localStorage.removeItem(kanbanName);
       } else {
-        window.localStorage.setItem('kanbanData', JSON.stringify(kanban));
+        window.localStorage.setItem(kanbanName, JSON.stringify(kanban));
       }
     } catch (e) {
       console.error('Failed setting localStorage', e);
