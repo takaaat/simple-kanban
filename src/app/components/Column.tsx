@@ -32,7 +32,7 @@ const Column = ({
   deleteTask,
   addTask,
 }: Props) => {
-  const { isOver, setNodeRef } = useDroppable({ id: id });
+  const { setNodeRef } = useDroppable({ id: id });
 
   return (
     <SortableContext
@@ -40,10 +40,7 @@ const Column = ({
       items={area.tasks}
       strategy={verticalListSortingStrategy}
     >
-      <div
-        ref={setNodeRef}
-        className={`w-100 h-200 flex-none border-2 p-2 ${isOver ? 'bg-blue-200' : 'bg-gray-100'}`}
-      >
+      <div ref={setNodeRef} className="w-100 h-200 flex-none border-2 p-2">
         <div className="flex justify-between">
           <div className="pb-1">{area.name}</div>
           <div className="flex gap-2">
