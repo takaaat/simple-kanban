@@ -20,6 +20,8 @@ export default function Home({
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  const { slug } = use(params);
+
   const {
     kanban,
     editingTaskId,
@@ -37,9 +39,7 @@ export default function Home({
     handleDragCancel,
     handleDragEnd,
     handleDragOver,
-  } = useKanban();
-
-  const { slug } = use(params);
+  } = useKanban(slug);
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 10 } }),
