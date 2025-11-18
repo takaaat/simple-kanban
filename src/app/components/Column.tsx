@@ -40,8 +40,11 @@ const Column = ({
       items={area.tasks}
       strategy={verticalListSortingStrategy}
     >
-      <div ref={setNodeRef} className="w-100 h-200 flex-none border-2 p-2">
-        <div className="flex justify-between">
+      <div
+        ref={setNodeRef}
+        className="w-100 h-full min-h-0 flex flex-col border-2 p-2 overflow-hidden"
+      >
+        <div className="flex justify-between flex-none">
           <div className="pb-1">{area.name}</div>
           <div className="flex gap-2">
             <button
@@ -74,24 +77,26 @@ const Column = ({
             </button>
           </div>
         </div>
-        {area.tasks.map((task) => (
-          <Draggable
-            key={task.id}
-            taskId={task.id}
-            editingTaskId={editingTaskId}
-          >
-            <TaskCard
-              task={task}
+        <div className="mt-2 flex-1 min-h-0 overflow-y-auto space-y-2 pr-1">
+          {area.tasks.map((task) => (
+            <Draggable
+              key={task.id}
+              taskId={task.id}
               editingTaskId={editingTaskId}
-              startEditingTask={() => startEditingTask(task.id)}
-              stopEditingTask={stopEditingTask}
-              editTask={editTask}
-              deleteTask={() => deleteTask(task.id)}
-            />
-          </Draggable>
-        ))}
+            >
+              <TaskCard
+                task={task}
+                editingTaskId={editingTaskId}
+                startEditingTask={() => startEditingTask(task.id)}
+                stopEditingTask={stopEditingTask}
+                editTask={editTask}
+                deleteTask={() => deleteTask(task.id)}
+              />
+            </Draggable>
+          ))}
+        </div>
         <button
-          className="w-full rounded border border-neutral-300 text-neutral-600 hover:bg-neutral-100 transition   mb-2 text-center bg-white cursor-pointer"
+          className="w-full rounded border border-neutral-300 text-neutral-600 hover:bg-neutral-100 transition mt-2 text-center bg-white cursor-pointer flex-none"
           onClick={() => {
             addTask(area.id);
           }}
