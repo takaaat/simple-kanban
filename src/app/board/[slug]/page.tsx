@@ -49,58 +49,60 @@ export default function Home({
   );
 
   return (
-    <div>
+    <div className="min-h-screen flex flex-col">
       <p className="pt-3 pl-5">Board: {slug}</p>
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-        onDragStart={handleDragStart}
-        onDragCancel={handleDragCancel}
-        onDragOver={handleDragOver}
-        id="unique-dnd-context-id"
-      >
-        <div className="p-5 flex gap-5 overflow-x-auto w-full">
-          {kanban.map((area) => {
-            return (
-              <Column
-                key={area.id}
-                id={area.id}
-                area={area}
-                editArea={editArea}
-                deleteArea={deleteArea}
-                editingTaskId={editingTaskId}
-                startEditingTask={startEditingTask}
-                stopEditingTask={stopEditingTask}
-                editTask={editTask}
-                deleteTask={deleteTask}
-                addTask={addTask}
+      <div className="flex-1 min-h-0 flex flex-col">
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+          onDragStart={handleDragStart}
+          onDragCancel={handleDragCancel}
+          onDragOver={handleDragOver}
+          id="unique-dnd-context-id"
+        >
+          <div className="p-5 flex-1 min-h-0 flex gap-5 overflow-x-auto w-full">
+            {kanban.map((area) => {
+              return (
+                <Column
+                  key={area.id}
+                  id={area.id}
+                  area={area}
+                  editArea={editArea}
+                  deleteArea={deleteArea}
+                  editingTaskId={editingTaskId}
+                  startEditingTask={startEditingTask}
+                  stopEditingTask={stopEditingTask}
+                  editTask={editTask}
+                  deleteTask={deleteTask}
+                  addTask={addTask}
+                />
+              );
+            })}
+            <button
+              className="rounded border border-neutral-300 px-4 py-3 bg-white text-neutral-600 hover:bg-neutral-100 transition h-7 flex items-center justify-center cursor-pointer"
+              type="button"
+              onClick={() => {
+                addArea();
+              }}
+            >
+              + Area
+            </button>
+          </div>
+          <DragOverlay>
+            {draggingTaskId !== null ? (
+              <TaskCard
+                task={activeTask!}
+                editingTaskId={-1}
+                startEditingTask={() => {}}
+                stopEditingTask={() => {}}
+                editTask={() => {}}
+                deleteTask={() => {}}
               />
-            );
-          })}
-          <button
-            className="rounded border border-neutral-300 px-4 py-3 bg-white text-neutral-600 hover:bg-neutral-100 transition h-7 flex items-center justify-center cursor-pointer"
-            type="button"
-            onClick={() => {
-              addArea();
-            }}
-          >
-            + Area
-          </button>
-        </div>
-        <DragOverlay>
-          {draggingTaskId !== null ? (
-            <TaskCard
-              task={activeTask!}
-              editingTaskId={-1}
-              startEditingTask={() => {}}
-              stopEditingTask={() => {}}
-              editTask={() => {}}
-              deleteTask={() => {}}
-            />
-          ) : null}
-        </DragOverlay>
-      </DndContext>
+            ) : null}
+          </DragOverlay>
+        </DndContext>
+      </div>
     </div>
   );
 }
