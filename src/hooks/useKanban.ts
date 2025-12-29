@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { CardArea, Task } from '../types/types';
 import {
   type Active,
@@ -10,6 +10,7 @@ import {
 } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function useKanban(kanbanName: string) {
   const initialKanbanData: CardArea[] = [
     { id: '0', name: 'todo', tasks: [] },
@@ -22,32 +23,6 @@ export function useKanban(kanbanName: string) {
   const [draggingTaskId, setDraggingTaskId] = useState<number | string | null>(
     null
   );
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const stored = window.localStorage.getItem(kanbanName);
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored) as CardArea[];
-        setKanban(parsed);
-      } catch (e) {
-        console.error('Failed parsing stored kanban data.', e);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    try {
-      if (kanban === null) {
-        window.localStorage.removeItem(kanbanName);
-      } else {
-        window.localStorage.setItem(kanbanName, JSON.stringify(kanban));
-      }
-    } catch (e) {
-      console.error('Failed setting localStorage', e);
-    }
-  }, [kanban]);
 
   function addArea(name: string = 'New Area') {
     const newId = Date.now().toString();
