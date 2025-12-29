@@ -31,7 +31,7 @@ export default async function Home({
     name,
     board_id,
     sort_order,
-    cards (
+    tasks (
       id,
       name,
       column_id,

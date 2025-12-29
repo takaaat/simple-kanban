@@ -4,17 +4,17 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { Draggable } from './Draggable';
-import { Column, Card } from '@/types/types';
+import { Column, Task } from '@/types/types';
 import { TaskCard } from './TaskCard';
 
 type Props = {
   area: Column;
   id: string;
-  editingTaskId: number;
-  startEditingTask: (taskId: number) => void;
+  editingTaskId: string;
+  startEditingTask: (taskId: string) => void;
   stopEditingTask: () => void;
-  editTask: (targetTask: Card, newName: string) => void;
-  deleteTask: (taskId: number) => void;
+  editTask: (targetTask: Task, newName: string) => void;
+  deleteTask: (taskId: string) => void;
   addTask: (areaId: string) => void;
   editArea: (areaId: string, newName: string) => void;
   deleteArea: (areaId: string) => void;
@@ -37,7 +37,7 @@ const ColumnComponent = ({
   return (
     <SortableContext
       id={String(id)}
-      items={area.cards}
+      items={area.tasks}
       strategy={verticalListSortingStrategy}
     >
       <div
@@ -78,7 +78,7 @@ const ColumnComponent = ({
           </div>
         </div>
         <div className="mt-2 flex-1 min-h-0 overflow-y-auto space-y-2 pr-1">
-          {area.cards.map((task) => (
+          {area.tasks.map((task) => (
             <Draggable
               key={task.id}
               taskId={task.id}

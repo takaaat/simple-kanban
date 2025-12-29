@@ -1,5 +1,5 @@
 export type Board = {
-  id: number;
+  id: string;
   slug: string;
   user_id: string;
   title: string;
@@ -9,13 +9,13 @@ export type Board = {
 export type Column = {
   id: string;
   name: string;
-  board_id: number;
+  board_id: string;
   sort_order: number;
-  cards: Card[];
+  tasks: Task[];
 };
 
-export type Card = {
-  id: number;
+export type Task = {
+  id: string;
   name: string;
   column_id: string;
   sort_order: number;

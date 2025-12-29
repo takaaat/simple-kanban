@@ -17,7 +17,7 @@ import { Column } from '@/types/types';
 
 interface KanbanViewProps {
   slug: string;
-  boardId: number;
+  boardId: string;
   kanbanData: Column[];
 }
 
@@ -93,7 +93,7 @@ export function KanbanView({ slug, boardId, kanbanData }: KanbanViewProps) {
             {draggingTaskId !== null ? (
               <TaskCard
                 task={activeTask!}
-                editingTaskId={-1}
+                editingTaskId={''}
                 startEditingTask={() => {}}
                 stopEditingTask={() => {}}
                 editTask={() => {}}

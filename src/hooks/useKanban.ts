@@ -1,7 +1,7 @@
 'use client';
 
 import { startTransition, useOptimistic, useState } from 'react';
-import type { Column, Card } from '../types/types';
+import type { Column, Task } from '../types/types';
 import {
   type Active,
   type Over,
@@ -12,7 +12,7 @@ import {
 import { arrayMove } from '@dnd-kit/sortable';
 import { addAreaAction } from './actions';
 
-export function useKanban(initialKanbanData: Column[], boardId: number) {
+export function useKanban(initialKanbanData: Column[], boardId: string) {
   const [kanban, setKanban] = useState<Column[]>(initialKanbanData);
   const [optimisticKanbanState, addKanbanOptimistic] = useOptimistic(
     kanban,
@@ -21,7 +21,7 @@ export function useKanban(initialKanbanData: Column[], boardId: number) {
     }
   );
 
-  const [editingTaskId, setEditingTaskId] = useState<number>(-1);
+  const [editingTaskId, setEditingTaskId] = useState<string>('');
   const [draggingTaskId, setDraggingTaskId] = useState<number | string | null>(
     null
   );
@@ -32,7 +32,7 @@ export function useKanban(initialKanbanData: Column[], boardId: number) {
       const newArea: Column = {
         id: newId,
         name: name,
-        cards: [],
+        tasks: [],
         board_id: boardId,
         sort_order: 0,
       };
@@ -43,14 +43,14 @@ export function useKanban(initialKanbanData: Column[], boardId: number) {
   }
 
   function addTask(areaId: string, name: string = 'New Task') {
-    const newId = Date.now();
+    const newId = self.crypto.randomUUID();
     setKanban(
       kanban.map((column) => {
         if (column.id === areaId) {
           return {
             ...column,
-            cards: [
-              ...column.cards,
+            tasks: [
+              ...column.tasks,
               { id: newId, name: name, column_id: column.id, sort_order: 0 },
             ],
           };
@@ -75,31 +75,32 @@ export function useKanban(initialKanbanData: Column[], boardId: number) {
     );
   }
 
-  function startEditingTask(id: number) {
+  function startEditingTask(id: string) {
     setEditingTaskId(id);
   }
 
-  function deleteTask(taskId: number) {
+  function deleteTask(taskId: string) {
     setKanban(
       kanban.map((area) => {
         return {
           ...area,
-          cards: area.cards.filter((task) => task.id !== taskId),
+          cards: area.tasks.filter((task) => task.id !== taskId),
         };
       })
     );
   }
 
   function stopEditingTask() {
-    setEditingTaskId(-1);
+    setEditingTaskId('');
   }
 
-  function editTask(targetTask: Card, newName: string) {
+  function editTask(targetTask: Task, newName: string) {
     setKanban(
       kanban.map((currentArea) => {
         return {
           ...currentArea,
-          cards: currentArea.cards.map((task) => {
+          tasks: currentArea.tasks.map((task) => {
+            console.log(task);
             if (task === targetTask) {
               return { ...task, name: newName };
             }
@@ -111,7 +112,7 @@ export function useKanban(initialKanbanData: Column[], boardId: number) {
   }
 
   const activeTask = kanban
-    .flatMap((area) => area.cards)
+    .flatMap((area) => area.tasks)
     .find((task) => task.id === draggingTaskId);
 
   function handleDragStart({ active }: DragStartEvent) {
@@ -142,7 +143,7 @@ export function useKanban(initialKanbanData: Column[], boardId: number) {
     if (active.id !== over.id) {
       const activeIndex = active.data.current.sortable.index;
       const overIndex = kanban.some((area) => area.id === over.id)
-        ? kanban.find((area) => area.id === overContainer)!.cards.length + 1
+        ? kanban.find((area) => area.id === overContainer)!.tasks.length + 1
         : over.data.current!.sortable.index;
 
       let newKanban: Column[];
@@ -157,28 +158,28 @@ export function useKanban(initialKanbanData: Column[], boardId: number) {
           }
           return {
             ...area,
-            cards: arrayMove(area.cards, activeIndex, overIndex),
+            tasks: arrayMove(area.tasks, activeIndex, overIndex),
           };
         });
         return newKanban;
       } else {
         const currentArea = kanban.find((area) => area.id === activeContainer);
         const currentActiveTask = currentArea
-          ? currentArea.cards[activeIndex]
+          ? currentArea.tasks[activeIndex]
           : undefined;
         const newKanban = kanban.map((area) => {
           if (area.id === activeContainer) {
             return {
               ...area,
-              cards: area.cards.filter((_, i) => i !== activeIndex),
+              tasks: area.tasks.filter((_, i) => i !== activeIndex),
             };
           }
           if (area.id === overContainer) {
-            const newcards = [...area.cards];
+            const newcards = [...area.tasks];
             newcards.splice(overIndex, 0, currentActiveTask!);
             return {
               ...area,
-              cards: newcards,
+              tasks: newcards,
             };
           }
           return area;

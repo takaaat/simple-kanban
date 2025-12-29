@@ -3,8 +3,8 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
 type Props = {
-  taskId: number;
-  editingTaskId: number;
+  taskId: string;
+  editingTaskId: string;
   children: React.ReactNode;
 };
 
