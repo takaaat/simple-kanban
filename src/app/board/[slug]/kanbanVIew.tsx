@@ -38,21 +38,13 @@ export function KanbanView({ slug, kanbanData }: KanbanViewProps) {
     handleDragCancel,
     handleDragEnd,
     handleDragOver,
-  } = useKanban(slug);
+  } = useKanban(kanbanData);
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 10 } }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
-  );
-
-  return (
-    <div>
-      {kanbanData.map((column) => (
-        <div>{column.name}</div>
-      ))}
-    </div>
   );
 
   return (

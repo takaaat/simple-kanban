@@ -10,14 +10,7 @@ import {
 } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function useKanban(kanbanName: string) {
-  const initialKanbanData: CardArea[] = [
-    { id: '0', name: 'todo', tasks: [] },
-    { id: '1', name: 'wip', tasks: [] },
-    { id: '2', name: 'done', tasks: [] },
-  ];
-
+export function useKanban(initialKanbanData: CardArea[]) {
   const [kanban, setKanban] = useState<CardArea[]>(initialKanbanData);
   const [editingTaskId, setEditingTaskId] = useState<number>(-1);
   const [draggingTaskId, setDraggingTaskId] = useState<number | string | null>(
