@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { KanbanView } from './kanbanVIew';
-import { CardArea } from '@/types/types';
+import { Column } from '@/types/types';
 
 export default async function Home({
   params,
@@ -29,9 +29,13 @@ export default async function Home({
       `
     id,
     name,
-    tasks:cards (
+    board_id,
+    sort_order,
+    cards (
       id,
-      name
+      name,
+      column_id,
+      sort_order
     )
   `
     )
@@ -40,6 +44,7 @@ export default async function Home({
   if (error || !data) {
     return <div></div>;
   }
-  const boardData: CardArea[] = data;
-  return <KanbanView slug={slug} kanbanData={boardData} />;
+  const boardData: Column[] = data;
+  console.log(data);
+  return <KanbanView slug={slug} boardId={boardId} kanbanData={boardData} />;
 }

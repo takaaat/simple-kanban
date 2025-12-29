@@ -11,18 +11,19 @@ import {
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { TaskCard } from '../../components/TaskCard';
-import Column from '../../components/Column';
+import ColumnComponent from '../../components/Column';
 import { useKanban } from '../../../hooks/useKanban';
-import { CardArea } from '@/types/types';
+import { Column } from '@/types/types';
 
 interface KanbanViewProps {
   slug: string;
-  kanbanData: CardArea[];
+  boardId: number;
+  kanbanData: Column[];
 }
 
-export function KanbanView({ slug, kanbanData }: KanbanViewProps) {
+export function KanbanView({ slug, boardId, kanbanData }: KanbanViewProps) {
   const {
-    kanban,
+    optimisticKanbanState,
     editingTaskId,
     draggingTaskId,
     activeTask,
@@ -38,7 +39,7 @@ export function KanbanView({ slug, kanbanData }: KanbanViewProps) {
     handleDragCancel,
     handleDragEnd,
     handleDragOver,
-  } = useKanban(kanbanData);
+  } = useKanban(kanbanData, boardId);
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 10 } }),
@@ -61,9 +62,9 @@ export function KanbanView({ slug, kanbanData }: KanbanViewProps) {
           id="unique-dnd-context-id"
         >
           <div className="p-5 flex-1 min-h-0 flex gap-5 overflow-x-auto w-full">
-            {kanban.map((area) => {
+            {optimisticKanbanState.map((area) => {
               return (
-                <Column
+                <ColumnComponent
                   key={area.id}
                   id={area.id}
                   area={area}

@@ -1,12 +1,12 @@
-import { Task } from '@/types/types';
+import { Card } from '@/types/types';
 import React, { forwardRef, useEffect, useRef } from 'react';
 
 type Props = {
-  task: Task;
+  task: Card;
   editingTaskId: number;
   startEditingTask: () => void;
   stopEditingTask: () => void;
-  editTask: (targetTask: Task, newName: string) => void;
+  editTask: (targetTask: Card, newName: string) => void;
   deleteTask: () => void;
   children?: React.ReactNode;
 };
