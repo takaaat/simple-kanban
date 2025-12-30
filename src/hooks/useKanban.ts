@@ -10,7 +10,7 @@ import {
   type DragOverEvent,
 } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
-import { addAreaAction } from './actions';
+import { addColumnAction, addTaskAction } from './actions';
 
 export function useKanban(initialKanbanData: Column[], boardId: string) {
   const [kanban, setKanban] = useState<Column[]>(initialKanbanData);
@@ -26,7 +26,7 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
     null
   );
 
-  function addArea(name: string = 'New Area') {
+  function addColumn(name: string = 'New Area') {
     startTransition(async () => {
       const newId = self.crypto.randomUUID();
       const newArea: Column = {
@@ -37,27 +37,50 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
         sort_order: 0,
       };
       addKanbanOptimistic([...kanban, newArea]);
-      await addAreaAction(boardId, newArea);
-      setKanban([...kanban, newArea]);
+      const succeed = await addColumnAction(boardId, newArea);
+      if (succeed) {
+        setKanban([...kanban, newArea]);
+      }
     });
   }
 
   function addTask(areaId: string, name: string = 'New Task') {
-    const newId = self.crypto.randomUUID();
-    setKanban(
-      kanban.map((column) => {
-        if (column.id === areaId) {
-          return {
-            ...column,
-            tasks: [
-              ...column.tasks,
-              { id: newId, name: name, column_id: column.id, sort_order: 0 },
-            ],
-          };
-        }
-        return column;
-      })
-    );
+    startTransition(async () => {
+      const newId = self.crypto.randomUUID();
+      const newTask: Task = {
+        id: newId,
+        name: name,
+        column_id: areaId,
+        sort_order: 0,
+      };
+      addKanbanOptimistic(
+        // TODO: setStateと全体的に重複しているので直したい
+        kanban.map((column) => {
+          if (column.id === areaId) {
+            return {
+              ...column,
+              tasks: [...column.tasks, newTask],
+            };
+          }
+          return column;
+        })
+      );
+      const succeed = await addTaskAction(newTask);
+      if (!succeed) {
+        return;
+      }
+      setKanban(
+        kanban.map((column) => {
+          if (column.id === areaId) {
+            return {
+              ...column,
+              tasks: [...column.tasks, newTask],
+            };
+          }
+          return column;
+        })
+      );
+    });
   }
 
   function deleteArea(areaId: string) {
@@ -202,7 +225,7 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
     draggingTaskId,
     activeTask,
     addTask,
-    addArea,
+    addArea: addColumn,
     deleteArea,
     editArea,
     startEditingTask,
