@@ -10,7 +10,13 @@ import {
   type DragOverEvent,
 } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
-import { addColumnAction, addTaskAction } from './actions';
+import {
+  addColumnAction,
+  addTaskAction,
+  deleteColumnAction,
+  deleteTaskAction,
+  renameColumnAction,
+} from './actions';
 
 export function useKanban(initialKanbanData: Column[], boardId: string) {
   const [kanban, setKanban] = useState<Column[]>(initialKanbanData);
@@ -83,19 +89,39 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
     });
   }
 
-  function deleteArea(areaId: string) {
-    setKanban(kanban.filter((area) => area.id !== areaId));
+  function deleteColumn(columnId: string) {
+    startTransition(async () => {
+      addKanbanOptimistic(kanban.filter((column) => column.id !== columnId));
+      const succeed = await deleteColumnAction(columnId);
+      if (succeed) {
+        setKanban(kanban.filter((column) => column.id !== columnId));
+      }
+    });
   }
 
-  function editArea(areaId: string, newName: string) {
-    setKanban(
-      kanban.map((area) => {
-        if (area.id === areaId) {
-          return { ...area, name: newName };
-        }
-        return area;
-      })
-    );
+  function editColumn(columnId: string, newName: string) {
+    startTransition(async () => {
+      addKanbanOptimistic(
+        kanban.map((column) => {
+          if (column.id === columnId) {
+            return { ...column, name: newName };
+          }
+          return column;
+        })
+      );
+      const succeed = await renameColumnAction(columnId, newName);
+      if (!succeed) {
+        return;
+      }
+      setKanban(
+        kanban.map((column) => {
+          if (column.id === columnId) {
+            return { ...column, name: newName };
+          }
+          return column;
+        })
+      );
+    });
   }
 
   function startEditingTask(id: string) {
@@ -103,14 +129,28 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
   }
 
   function deleteTask(taskId: string) {
-    setKanban(
-      kanban.map((area) => {
-        return {
-          ...area,
-          cards: area.tasks.filter((task) => task.id !== taskId),
-        };
-      })
-    );
+    startTransition(async () => {
+      addKanbanOptimistic(
+        kanban.map((column) => {
+          return {
+            ...column,
+            tasks: column.tasks.filter((task) => task.id !== taskId),
+          };
+        })
+      );
+      const succeed = await deleteTaskAction(taskId);
+      if (!succeed) {
+        return;
+      }
+      setKanban(
+        kanban.map((column) => {
+          return {
+            ...column,
+            tasks: column.tasks.filter((task) => task.id !== taskId),
+          };
+        })
+      );
+    });
   }
 
   function stopEditingTask() {
@@ -123,7 +163,6 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
         return {
           ...currentArea,
           tasks: currentArea.tasks.map((task) => {
-            console.log(task);
             if (task === targetTask) {
               return { ...task, name: newName };
             }
@@ -226,8 +265,8 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
     activeTask,
     addTask,
     addArea: addColumn,
-    deleteArea,
-    editArea,
+    deleteArea: deleteColumn,
+    editArea: editColumn,
     startEditingTask,
     deleteTask,
     stopEditingTask,
