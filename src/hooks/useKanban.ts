@@ -1,6 +1,12 @@
 'use client';
 
-import { startTransition, useOptimistic, useState } from 'react';
+import {
+  startTransition,
+  useEffect,
+  useOptimistic,
+  useRef,
+  useState,
+} from 'react';
 import type { Column, Task } from '../types/types';
 import {
   type Active,
@@ -16,6 +22,7 @@ import {
   deleteColumnAction,
   deleteTaskAction,
   renameColumnAction,
+  renameTaskAction,
 } from './actions';
 
 export function useKanban(initialKanbanData: Column[], boardId: string) {
@@ -31,6 +38,8 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
   const [draggingTaskId, setDraggingTaskId] = useState<number | string | null>(
     null
   );
+
+  const uncomittedUpdateTasks = useRef<Task[]>([]);
 
   function addColumn(name: string = 'New Area') {
     startTransition(async () => {
@@ -158,6 +167,24 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
   }
 
   function editTask(targetTask: Task, newName: string) {
+    const isExist = uncomittedUpdateTasks.current.some(
+      (task) => task.id === targetTask.id
+    );
+    if (isExist) {
+      uncomittedUpdateTasks.current = uncomittedUpdateTasks.current.map(
+        (task) => {
+          if (task.id !== targetTask.id) {
+            return task;
+          }
+          return { ...task, name: newName };
+        }
+      );
+    } else {
+      uncomittedUpdateTasks.current = [
+        { ...targetTask, name: newName },
+        ...uncomittedUpdateTasks.current,
+      ];
+    }
     setKanban(
       kanban.map((currentArea) => {
         return {
@@ -172,6 +199,21 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
       })
     );
   }
+
+  useEffect(() => {
+    const tasksToProcess = [...uncomittedUpdateTasks.current];
+    uncomittedUpdateTasks.current = [];
+    if (tasksToProcess.length === 0) return;
+    (async () => {
+      try {
+        await Promise.all(
+          tasksToProcess.map((task) => renameTaskAction(task.id, task.name))
+        );
+      } catch (error) {
+        console.error(error);
+      }
+    })();
+  }, [editingTaskId]);
 
   const activeTask = kanban
     .flatMap((area) => area.tasks)
