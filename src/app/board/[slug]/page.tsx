@@ -30,12 +30,12 @@ export default async function Home({
     id,
     name,
     board_id,
-    sort_order,
+    sort_rank,
     tasks (
       id,
       name,
       column_id,
-      sort_order
+      sort_rank
     )
   `
     )

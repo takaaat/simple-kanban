@@ -49,7 +49,7 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
         name: name,
         tasks: [],
         board_id: boardId,
-        sort_order: 0,
+        sort_rank: '',
       };
       addKanbanOptimistic([...kanban, newArea]);
       const succeed = await addColumnAction(boardId, newArea);
@@ -66,7 +66,7 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
         id: newId,
         name: name,
         column_id: areaId,
-        sort_order: 0,
+        sort_rank: '',
       };
       addKanbanOptimistic(
         // TODO: setStateと全体的に重複しているので直したい
