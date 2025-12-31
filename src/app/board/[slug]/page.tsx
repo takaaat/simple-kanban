@@ -39,8 +39,7 @@ export default async function Home({
     )
   `
     )
-    .eq('board_id', boardId)
-    .order('sort_order');
+    .eq('board_id', boardId);
   if (error || !data) {
     return <div></div>;
   }
