@@ -43,7 +43,8 @@ export default async function Home({
   if (error || !data) {
     return <div></div>;
   }
-  const boardData: Column[] = data;
-  console.log(data);
+  const boardData: Column[] = data.sort((a, b) =>
+    a.sort_rank.localeCompare(b.sort_rank)
+  );
   return <KanbanView slug={slug} boardId={boardId} kanbanData={boardData} />;
 }

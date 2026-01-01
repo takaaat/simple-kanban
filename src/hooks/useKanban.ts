@@ -24,6 +24,7 @@ import {
   renameColumnAction,
   renameTaskAction,
 } from './actions';
+import { LexoRank } from 'lexorank';
 
 export function useKanban(initialKanbanData: Column[], boardId: string) {
   const [kanban, setKanban] = useState<Column[]>(initialKanbanData);
@@ -43,13 +44,21 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
 
   function addColumn(name: string = 'New Area') {
     startTransition(async () => {
+      let newRank = LexoRank.middle().format();
+      if (kanban.length) {
+        const sortedColumn = kanban.sort((a, b) =>
+          a.sort_rank.localeCompare(b.sort_rank)
+        );
+        const lastColumn = sortedColumn.at(-1);
+        newRank = LexoRank.parse(lastColumn!.sort_rank).genNext().format();
+      }
       const newId = self.crypto.randomUUID();
       const newArea: Column = {
         id: newId,
         name: name,
         tasks: [],
         board_id: boardId,
-        sort_rank: '',
+        sort_rank: newRank,
       };
       addKanbanOptimistic([...kanban, newArea]);
       const succeed = await addColumnAction(boardId, newArea);
