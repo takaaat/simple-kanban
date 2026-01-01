@@ -2,7 +2,6 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { KanbanView } from './kanbanVIew';
-import { Column } from '@/types/types';
 
 export default async function Home({
   params,
@@ -43,8 +42,5 @@ export default async function Home({
   if (error || !data) {
     return <div></div>;
   }
-  const boardData: Column[] = data.sort((a, b) =>
-    a.sort_rank.localeCompare(b.sort_rank)
-  );
-  return <KanbanView slug={slug} boardId={boardId} kanbanData={boardData} />;
+  return <KanbanView slug={slug} boardId={boardId} kanbanData={data} />;
 }

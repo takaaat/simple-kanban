@@ -41,6 +41,15 @@ export function KanbanView({ slug, boardId, kanbanData }: KanbanViewProps) {
     handleDragOver,
   } = useKanban(kanbanData, boardId);
 
+  const sortedColumns = optimisticKanbanState
+    .toSorted((a, b) => a.sort_rank.localeCompare(b.sort_rank))
+    .map((column) => ({
+      ...column,
+      tasks: [...column.tasks].sort((a, b) =>
+        a.sort_rank.localeCompare(b.sort_rank)
+      ),
+    }));
+
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 10 } }),
     useSensor(KeyboardSensor, {
@@ -62,7 +71,7 @@ export function KanbanView({ slug, boardId, kanbanData }: KanbanViewProps) {
           id="unique-dnd-context-id"
         >
           <div className="p-5 flex-1 min-h-0 flex gap-5 overflow-x-auto w-full">
-            {optimisticKanbanState.map((area) => {
+            {sortedColumns.map((area) => {
               return (
                 <ColumnComponent
                   key={area.id}

@@ -46,7 +46,7 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
     startTransition(async () => {
       let newRank = LexoRank.middle().format();
       if (kanban.length) {
-        const sortedColumn = kanban.sort((a, b) =>
+        const sortedColumn = kanban.toSorted((a, b) =>
           a.sort_rank.localeCompare(b.sort_rank)
         );
         const lastColumn = sortedColumn.at(-1);
@@ -68,19 +68,31 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
     });
   }
 
-  function addTask(areaId: string, name: string = 'New Task') {
+  function addTask(columnId: string, name: string = 'New Task') {
     startTransition(async () => {
+      const column = kanban.find((column) => column.id == columnId);
+      if (!column) {
+        return;
+      }
+      let newRank = LexoRank.middle().format();
+      if (column.tasks.length) {
+        const sortedTasks: Task[] = column.tasks.toSorted((a, b) =>
+          a.sort_rank.localeCompare(b.sort_rank)
+        );
+        const lastTask = sortedTasks.at(-1);
+        newRank = LexoRank.parse(lastTask!.sort_rank).genNext().format();
+      }
       const newId = self.crypto.randomUUID();
       const newTask: Task = {
         id: newId,
         name: name,
-        column_id: areaId,
-        sort_rank: '',
+        column_id: columnId,
+        sort_rank: newRank,
       };
       addKanbanOptimistic(
         // TODO: setStateと全体的に重複しているので直したい
         kanban.map((column) => {
-          if (column.id === areaId) {
+          if (column.id === columnId) {
             return {
               ...column,
               tasks: [...column.tasks, newTask],
@@ -95,7 +107,7 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
       }
       setKanban(
         kanban.map((column) => {
-          if (column.id === areaId) {
+          if (column.id === columnId) {
             return {
               ...column,
               tasks: [...column.tasks, newTask],
