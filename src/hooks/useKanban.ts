@@ -15,7 +15,6 @@ import {
   type DragEndEvent,
   type DragOverEvent,
 } from '@dnd-kit/core';
-import { arrayMove } from '@dnd-kit/sortable';
 import {
   addColumnAction,
   addTaskAction,
@@ -34,6 +33,15 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
       return newState;
     }
   );
+
+  const sortedColumns = optimisticKanbanState
+    .toSorted((a, b) => a.sort_rank.localeCompare(b.sort_rank))
+    .map((column) => ({
+      ...column,
+      tasks: [...column.tasks].sort((a, b) =>
+        a.sort_rank.localeCompare(b.sort_rank)
+      ),
+    }));
 
   const [editingTaskId, setEditingTaskId] = useState<string>('');
   const [draggingTaskId, setDraggingTaskId] = useState<number | string | null>(
@@ -254,6 +262,69 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
     setDraggingTaskId(null);
   }
 
+  function handleDragOver({ active, over }: DragOverEvent) {
+    return;
+    setKanban((prevKanban) =>
+      moveTaskBetweenKanban({ active, over, kanban: prevKanban })
+    );
+  }
+
+  function lexoTaskMove(
+    tasks: Task[],
+    columnId: string,
+    activeSortedIndex: number,
+    overSortedIndex: number
+  ): Task[] {
+    const currentColumnFromSorted = sortedColumns.find(
+      (column) => column.id === columnId
+    );
+
+    if (!currentColumnFromSorted) {
+      throw new Error('対応するColumnが見つからない');
+    }
+
+    console.log(`acrive: ${activeSortedIndex} over: ${overSortedIndex}`);
+
+    let prevIndex: number;
+    let nextIndex: number;
+    if (activeSortedIndex > overSortedIndex) {
+      prevIndex = overSortedIndex - 1;
+      nextIndex = overSortedIndex;
+    } else {
+      prevIndex = overSortedIndex;
+      nextIndex = overSortedIndex + 1;
+    }
+
+    const activeFromSorted = currentColumnFromSorted.tasks[activeSortedIndex];
+    const prevTask = currentColumnFromSorted.tasks[prevIndex];
+    const nextTask = currentColumnFromSorted.tasks[nextIndex];
+
+    let newRank: string;
+
+    if (!prevTask && !nextTask) {
+      newRank = LexoRank.middle().format();
+    } else if (!prevTask) {
+      newRank = LexoRank.parse(nextTask.sort_rank).genPrev().format();
+    } else if (!nextTask) {
+      newRank = LexoRank.parse(prevTask.sort_rank).genNext().format();
+    } else {
+      newRank = LexoRank.parse(prevTask.sort_rank)
+        .between(LexoRank.parse(nextTask.sort_rank))
+        .format();
+    }
+
+    const newTasks: Task[] = [...tasks];
+    return newTasks.map((task) => {
+      if (task.id === activeFromSorted.id) {
+        return {
+          ...task,
+          sort_rank: newRank,
+        };
+      }
+      return task;
+    });
+  }
+
   function moveTaskBetweenKanban(params: {
     active: Active;
     over: Over | null;
@@ -266,8 +337,8 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
     const activeContainer = active.data.current.sortable.containerId;
     const overContainer = over.data.current?.sortable.containerId || over.id;
     if (active.id !== over.id) {
-      const activeIndex = active.data.current.sortable.index;
-      const overIndex = kanban.some((area) => area.id === over.id)
+      const activeIndex: number = active.data.current.sortable.index;
+      const overIndex: number = kanban.some((area) => area.id === over.id)
         ? kanban.find((area) => area.id === overContainer)!.tasks.length + 1
         : over.data.current!.sortable.index;
 
@@ -277,17 +348,19 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
         if (!currentArea) {
           return kanban;
         }
+        console.log('あああああああああああああああ');
         newKanban = kanban.map((area) => {
           if (area.id !== currentArea.id) {
             return area;
           }
           return {
             ...area,
-            tasks: arrayMove(area.tasks, activeIndex, overIndex),
+            tasks: lexoTaskMove(area.tasks, area.id, activeIndex, overIndex),
           };
         });
         return newKanban;
       } else {
+        console.log('おおおおおおおおおおおおおおおお！！！');
         const currentArea = kanban.find((area) => area.id === activeContainer);
         const currentActiveTask = currentArea
           ? currentArea.tasks[activeIndex]
@@ -315,14 +388,8 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
     return kanban;
   }
 
-  function handleDragOver({ active, over }: DragOverEvent) {
-    setKanban((prevKanban) =>
-      moveTaskBetweenKanban({ active, over, kanban: prevKanban })
-    );
-  }
-
   return {
-    optimisticKanbanState,
+    sortedColumns,
     editingTaskId,
     draggingTaskId,
     activeTask,

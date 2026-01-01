@@ -23,7 +23,7 @@ interface KanbanViewProps {
 
 export function KanbanView({ slug, boardId, kanbanData }: KanbanViewProps) {
   const {
-    optimisticKanbanState,
+    sortedColumns,
     editingTaskId,
     draggingTaskId,
     activeTask,
@@ -40,15 +40,6 @@ export function KanbanView({ slug, boardId, kanbanData }: KanbanViewProps) {
     handleDragEnd,
     handleDragOver,
   } = useKanban(kanbanData, boardId);
-
-  const sortedColumns = optimisticKanbanState
-    .toSorted((a, b) => a.sort_rank.localeCompare(b.sort_rank))
-    .map((column) => ({
-      ...column,
-      tasks: [...column.tasks].sort((a, b) =>
-        a.sort_rank.localeCompare(b.sort_rank)
-      ),
-    }));
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 10 } }),
