@@ -263,7 +263,14 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
   }
 
   function handleDragOver({ active, over }: DragOverEvent) {
-    return;
+    if (over === null || !active.data.current) {
+      return kanban;
+    }
+    const activeContainer = active.data.current.sortable.containerId;
+    const overContainer = over.data.current?.sortable.containerId || over.id;
+    if (activeContainer === overContainer) {
+      return;
+    }
     setKanban((prevKanban) =>
       moveTaskBetweenKanban({ active, over, kanban: prevKanban })
     );
@@ -282,8 +289,6 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
     if (!currentColumnFromSorted) {
       throw new Error('対応するColumnが見つからない');
     }
-
-    console.log(`acrive: ${activeSortedIndex} over: ${overSortedIndex}`);
 
     let prevIndex: number;
     let nextIndex: number;
@@ -325,6 +330,76 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
     });
   }
 
+  function moveTaskBetweenColumn(
+    kanban: Column[],
+    activeContainer: string,
+    overContainer: string,
+    activeIndex: number,
+    overIndex: number
+  ): Column[] {
+    const activeColumn = sortedColumns.find(
+      (column) => column.id === activeContainer
+    );
+
+    const overColumn = sortedColumns.find(
+      (column) => column.id === overContainer
+    );
+
+    if (!activeColumn || !overColumn) {
+      throw new Error('対応するColumnが見つからない');
+    }
+
+    const currentActiveTask = activeColumn
+      ? activeColumn.tasks[activeIndex]
+      : undefined;
+
+    const activeFromSorted = activeColumn.tasks[activeIndex];
+    const prevTask = overColumn.tasks[overIndex - 1];
+    const nextTask = overColumn.tasks[overIndex];
+
+    console.log(overIndex);
+    console.log(prevTask);
+    console.log(nextTask);
+
+    let newRank: string;
+
+    if (!prevTask && !nextTask) {
+      newRank = LexoRank.middle().format();
+    } else if (!prevTask) {
+      newRank = LexoRank.parse(nextTask.sort_rank).genPrev().format();
+    } else if (!nextTask) {
+      newRank = LexoRank.parse(prevTask.sort_rank).genNext().format();
+    } else {
+      newRank = LexoRank.parse(prevTask.sort_rank)
+        .between(LexoRank.parse(nextTask.sort_rank))
+        .format();
+    }
+
+    const newKanban = kanban.map((column) => {
+      if (column.id === activeContainer) {
+        return {
+          ...column,
+          tasks: column.tasks.filter((task) => task.id !== activeFromSorted.id),
+        };
+      }
+      if (column.id === overContainer) {
+        return {
+          ...column,
+          tasks: [
+            ...column.tasks,
+            {
+              ...currentActiveTask!,
+              column_id: column.id,
+              sort_rank: newRank,
+            },
+          ],
+        };
+      }
+      return column;
+    });
+    return newKanban;
+  }
+
   function moveTaskBetweenKanban(params: {
     active: Active;
     over: Over | null;
@@ -339,7 +414,7 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
     if (active.id !== over.id) {
       const activeIndex: number = active.data.current.sortable.index;
       const overIndex: number = kanban.some((area) => area.id === over.id)
-        ? kanban.find((area) => area.id === overContainer)!.tasks.length + 1
+        ? kanban.find((area) => area.id === overContainer)!.tasks.length
         : over.data.current!.sortable.index;
 
       let newKanban: Column[];
@@ -348,7 +423,7 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
         if (!currentArea) {
           return kanban;
         }
-        console.log('あああああああああああああああ');
+        console.log('column内部での移動');
         newKanban = kanban.map((area) => {
           if (area.id !== currentArea.id) {
             return area;
@@ -360,29 +435,15 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
         });
         return newKanban;
       } else {
-        console.log('おおおおおおおおおおおおおおおお！！！');
-        const currentArea = kanban.find((area) => area.id === activeContainer);
-        const currentActiveTask = currentArea
-          ? currentArea.tasks[activeIndex]
-          : undefined;
-        const newKanban = kanban.map((area) => {
-          if (area.id === activeContainer) {
-            return {
-              ...area,
-              tasks: area.tasks.filter((_, i) => i !== activeIndex),
-            };
-          }
-          if (area.id === overContainer) {
-            const newcards = [...area.tasks];
-            newcards.splice(overIndex, 0, currentActiveTask!);
-            return {
-              ...area,
-              tasks: newcards,
-            };
-          }
-          return area;
-        });
-        return newKanban;
+        console.log('columm外部での移動');
+
+        return moveTaskBetweenColumn(
+          kanban,
+          activeContainer,
+          overContainer,
+          activeIndex,
+          overIndex
+        );
       }
     }
     return kanban;
