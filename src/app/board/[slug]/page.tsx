@@ -2,7 +2,6 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { KanbanView } from './kanbanVIew';
-import { Column } from '@/types/types';
 
 export default async function Home({
   params,
@@ -30,21 +29,18 @@ export default async function Home({
     id,
     name,
     board_id,
-    sort_order,
+    sort_rank,
     tasks (
       id,
       name,
       column_id,
-      sort_order
+      sort_rank
     )
   `
     )
-    .eq('board_id', boardId)
-    .order('sort_order');
+    .eq('board_id', boardId);
   if (error || !data) {
     return <div></div>;
   }
-  const boardData: Column[] = data;
-  console.log(data);
-  return <KanbanView slug={slug} boardId={boardId} kanbanData={boardData} />;
+  return <KanbanView slug={slug} boardId={boardId} kanbanData={data} />;
 }

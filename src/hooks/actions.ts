@@ -5,14 +5,14 @@ import { Column, Task } from '@/types/types';
 
 export async function addColumnAction(
   boardId: string,
-  newArea: Column
+  newColumn: Column
 ): Promise<boolean> {
   const supabase = await createClient();
 
-  const { tasks: _, ...newAreaWithoutChildren } = newArea;
+  const { tasks: _, ...newColumnWithoutChildren } = newColumn;
   const { error } = await supabase
     .from('columns')
-    .insert(newAreaWithoutChildren);
+    .insert(newColumnWithoutChildren);
   if (error) {
     console.log(error);
     return false;

@@ -23,7 +23,7 @@ interface KanbanViewProps {
 
 export function KanbanView({ slug, boardId, kanbanData }: KanbanViewProps) {
   const {
-    optimisticKanbanState,
+    sortedColumns,
     editingTaskId,
     draggingTaskId,
     activeTask,
@@ -62,7 +62,7 @@ export function KanbanView({ slug, boardId, kanbanData }: KanbanViewProps) {
           id="unique-dnd-context-id"
         >
           <div className="p-5 flex-1 min-h-0 flex gap-5 overflow-x-auto w-full">
-            {optimisticKanbanState.map((area) => {
+            {sortedColumns.map((area) => {
               return (
                 <ColumnComponent
                   key={area.id}

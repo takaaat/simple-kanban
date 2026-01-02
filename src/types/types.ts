@@ -10,7 +10,7 @@ export type Column = {
   id: string;
   name: string;
   board_id: string;
-  sort_order: number;
+  sort_rank: string;
   tasks: Task[];
 };
 
@@ -18,5 +18,5 @@ export type Task = {
   id: string;
   name: string;
   column_id: string;
-  sort_order: number;
+  sort_rank: string;
 };
