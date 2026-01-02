@@ -4,23 +4,23 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { Draggable } from './Draggable';
-import { CardArea, Task } from '@/types/types';
+import { Column, Task } from '@/types/types';
 import { TaskCard } from './TaskCard';
 
 type Props = {
-  area: CardArea;
+  area: Column;
   id: string;
-  editingTaskId: number;
-  startEditingTask: (taskId: number) => void;
+  editingTaskId: string;
+  startEditingTask: (taskId: string) => void;
   stopEditingTask: () => void;
   editTask: (targetTask: Task, newName: string) => void;
-  deleteTask: (taskId: number) => void;
+  deleteTask: (taskId: string) => void;
   addTask: (areaId: string) => void;
   editArea: (areaId: string, newName: string) => void;
   deleteArea: (areaId: string) => void;
 };
 
-const Column = ({
+const ColumnComponent = ({
   editingTaskId,
   area,
   id,
@@ -67,7 +67,7 @@ const Column = ({
               className="cursor-pointer underline"
               onClick={() => {
                 if (
-                  window.confirm('Are you sure you want to delete this area?')
+                  window.confirm('Are you sure you want to delete this column?')
                 ) {
                   deleteArea(area.id);
                 }
@@ -108,4 +108,4 @@ const Column = ({
   );
 };
 
-export default Column;
+export default ColumnComponent;

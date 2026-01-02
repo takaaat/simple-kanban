@@ -1,10 +1,22 @@
-export type CardArea = {
+export type Board = {
+  id: string;
+  slug: string;
+  user_id: string;
+  title: string;
+  columns: Column[];
+};
+
+export type Column = {
   id: string;
   name: string;
+  board_id: string;
+  sort_rank: string;
   tasks: Task[];
 };
 
 export type Task = {
-  id: number;
+  id: string;
   name: string;
+  column_id: string;
+  sort_rank: string;
 };

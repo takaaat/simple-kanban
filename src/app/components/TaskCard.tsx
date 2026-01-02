@@ -3,7 +3,7 @@ import React, { forwardRef, useEffect, useRef } from 'react';
 
 type Props = {
   task: Task;
-  editingTaskId: number;
+  editingTaskId: string;
   startEditingTask: () => void;
   stopEditingTask: () => void;
   editTask: (targetTask: Task, newName: string) => void;
