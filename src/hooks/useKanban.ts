@@ -20,6 +20,7 @@ import {
   addTaskAction,
   deleteColumnAction,
   deleteTaskAction,
+  moveTaskAction,
   renameColumnAction,
   renameTaskAction,
 } from './actions';
@@ -256,10 +257,30 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
   }
 
   function handleDragEnd({ active, over }: DragEndEvent) {
-    setKanban((prevKanban) =>
-      moveKanbanTask({ active, over, kanban: prevKanban })
-    );
     setDraggingTaskId(null);
+    startTransition(async () => {
+      const newKanban = moveKanbanTask({ active, over, kanban: kanban });
+      addKanbanOptimistic(newKanban);
+      const updatedTaskId = active.id.toString();
+      let updatedTask: Task | undefined;
+      newKanban.forEach((column) => {
+        if (!updatedTask) {
+          updatedTask = column.tasks.find((task) => task.id === updatedTaskId);
+        }
+      });
+      console.log(updatedTaskId);
+      console.log(updatedTask);
+      if (updatedTask) {
+        const succeed = await moveTaskAction(
+          updatedTaskId,
+          updatedTask.sort_rank,
+          updatedTask.column_id
+        );
+        if (succeed) {
+          setKanban(newKanban);
+        }
+      }
+    });
   }
 
   function handleDragOver({ active, over }: DragOverEvent) {
@@ -282,6 +303,7 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
     activeSortedIndex: number,
     overSortedIndex: number
   ): Task[] {
+    console.log('lexo move発火');
     const currentColumnFromSorted = sortedColumns.find(
       (column) => column.id === columnId
     );
@@ -337,6 +359,7 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
     activeIndex: number,
     overIndex: number
   ): Column[] {
+    console.log('move task between co発火');
     const activeColumn = sortedColumns.find(
       (column) => column.id === activeContainer
     );

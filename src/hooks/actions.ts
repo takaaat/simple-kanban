@@ -79,3 +79,19 @@ export async function renameTaskAction(
   }
   return true;
 }
+
+export async function moveTaskAction(
+  taskId: string,
+  newSortRank: string,
+  newColumnId: string
+): Promise<boolean> {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from('tasks')
+    .update({ sort_rank: newSortRank, column_id: newColumnId })
+    .eq('id', taskId);
+  if (error) {
+    return false;
+  }
+  return true;
+}
