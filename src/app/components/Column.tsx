@@ -67,7 +67,7 @@ const ColumnComponent = ({
               className="cursor-pointer underline"
               onClick={() => {
                 if (
-                  window.confirm('Are you sure you want to delete this area?')
+                  window.confirm('Are you sure you want to delete this column?')
                 ) {
                   deleteArea(area.id);
                 }
