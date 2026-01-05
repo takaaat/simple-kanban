@@ -26,12 +26,24 @@ import {
 } from './actions';
 import { LexoRank } from 'lexorank';
 
+type Action =
+  | { type: 'others'; newState: Column[] }
+  | { type: 'delete'; taskId: string };
+
 export function useKanban(initialKanbanData: Column[], boardId: string) {
   const [kanban, setKanban] = useState<Column[]>(initialKanbanData);
   const [optimisticKanbanState, addKanbanOptimistic] = useOptimistic(
     kanban,
-    (currentState, newState: Column[]) => {
-      return newState;
+    (currentState, action: Action) => {
+      if (action.type === 'delete') {
+        return currentState.map((column) => {
+          return {
+            ...column,
+            tasks: column.tasks.filter((task) => task.id !== action.taskId),
+          };
+        });
+      }
+      return action.newState;
     }
   );
 
@@ -69,7 +81,10 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
         board_id: boardId,
         sort_rank: newRank,
       };
-      addKanbanOptimistic([...kanban, newColumn]);
+      addKanbanOptimistic({
+        type: 'others',
+        newState: [...kanban, newColumn],
+      });
       const succeed = await addColumnAction(boardId, newColumn);
       if (succeed) {
         setKanban([...kanban, newColumn]);
@@ -98,18 +113,20 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
         column_id: columnId,
         sort_rank: newRank,
       };
-      addKanbanOptimistic(
-        // TODO: setStateと全体的に重複しているので直したい
-        kanban.map((column) => {
-          if (column.id === columnId) {
-            return {
-              ...column,
-              tasks: [...column.tasks, newTask],
-            };
-          }
-          return column;
-        })
-      );
+      addKanbanOptimistic({
+        type: 'others',
+        newState:
+          // TODO: setStateと全体的に重複しているので直したい
+          kanban.map((column) => {
+            if (column.id === columnId) {
+              return {
+                ...column,
+                tasks: [...column.tasks, newTask],
+              };
+            }
+            return column;
+          }),
+      });
       const succeed = await addTaskAction(newTask);
       if (!succeed) {
         return;
@@ -130,7 +147,10 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
 
   function deleteColumn(columnId: string) {
     startTransition(async () => {
-      addKanbanOptimistic(kanban.filter((column) => column.id !== columnId));
+      addKanbanOptimistic({
+        type: 'others',
+        newState: kanban.filter((column) => column.id !== columnId),
+      });
       const succeed = await deleteColumnAction(columnId);
       if (succeed) {
         setKanban(kanban.filter((column) => column.id !== columnId));
@@ -140,14 +160,15 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
 
   function editColumn(columnId: string, newName: string) {
     startTransition(async () => {
-      addKanbanOptimistic(
-        kanban.map((column) => {
+      addKanbanOptimistic({
+        type: 'others',
+        newState: kanban.map((column) => {
           if (column.id === columnId) {
             return { ...column, name: newName };
           }
           return column;
-        })
-      );
+        }),
+      });
       const succeed = await renameColumnAction(columnId, newName);
       if (!succeed) {
         return;
@@ -169,20 +190,16 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
 
   function deleteTask(taskId: string) {
     startTransition(async () => {
-      addKanbanOptimistic(
-        kanban.map((column) => {
-          return {
-            ...column,
-            tasks: column.tasks.filter((task) => task.id !== taskId),
-          };
-        })
-      );
+      addKanbanOptimistic({
+        type: 'delete',
+        taskId: taskId,
+      });
       const succeed = await deleteTaskAction(taskId);
       if (!succeed) {
         return;
       }
-      setKanban(
-        kanban.map((column) => {
+      setKanban((prevKanban) =>
+        prevKanban.map((column) => {
           return {
             ...column,
             tasks: column.tasks.filter((task) => task.id !== taskId),
@@ -260,7 +277,7 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
     setDraggingTaskId(null);
     startTransition(async () => {
       const newKanban = moveKanbanTask({ active, over, kanban: kanban });
-      addKanbanOptimistic(newKanban);
+      addKanbanOptimistic({ type: 'others', newState: newKanban });
       const updatedTaskId = active.id.toString();
       let updatedTask: Task | undefined;
       newKanban.forEach((column) => {
