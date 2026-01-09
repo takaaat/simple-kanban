@@ -28,7 +28,8 @@ import { LexoRank } from 'lexorank';
 
 type Action =
   | { type: 'others'; newState: Column[] }
-  | { type: 'delete'; taskId: string };
+  | { type: 'delete'; taskId: string }
+  | { type: 'addTask'; columnId: string; newTask: Task };
 
 export function useKanban(initialKanbanData: Column[], boardId: string) {
   const [kanban, setKanban] = useState<Column[]>(initialKanbanData);
@@ -41,6 +42,17 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
             ...column,
             tasks: column.tasks.filter((task) => task.id !== action.taskId),
           };
+        });
+      }
+      if (action.type === 'addTask') {
+        return currentState.map((column) => {
+          if (column.id === action.columnId) {
+            return {
+              ...column,
+              tasks: [...column.tasks, action.newTask],
+            };
+          }
+          return column;
         });
       }
       return action.newState;
@@ -114,18 +126,9 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
         sort_rank: newRank,
       };
       addKanbanOptimistic({
-        type: 'others',
-        newState:
-          // TODO: setStateと全体的に重複しているので直したい
-          kanban.map((column) => {
-            if (column.id === columnId) {
-              return {
-                ...column,
-                tasks: [...column.tasks, newTask],
-              };
-            }
-            return column;
-          }),
+        type: 'addTask',
+        columnId: columnId,
+        newTask: newTask,
       });
       const succeed = await addTaskAction(newTask);
       if (!succeed) {
