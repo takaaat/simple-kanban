@@ -1,12 +1,7 @@
 'use client';
 
-import {
-  startTransition,
-  useEffect,
-  useOptimistic,
-  useRef,
-  useState,
-} from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import type { Column, Task } from '../types/types';
 import {
   type Active,
@@ -27,15 +22,15 @@ import {
 import { LexoRank } from 'lexorank';
 
 export function useKanban(initialKanbanData: Column[], boardId: string) {
+  const router = useRouter();
   const [kanban, setKanban] = useState<Column[]>(initialKanbanData);
-  const [optimisticKanbanState, addKanbanOptimistic] = useOptimistic(
-    kanban,
-    (currentState, newState: Column[]) => {
-      return newState;
-    }
-  );
 
-  const sortedColumns = optimisticKanbanState
+  // db処理に失敗してrouter.refreshされたときのserver component更新時
+  useEffect(() => {
+    setKanban(initialKanbanData);
+  }, [initialKanbanData]);
+
+  const sortedColumns = kanban
     .toSorted((a, b) => a.sort_rank.localeCompare(b.sort_rank))
     .map((column) => ({
       ...column,
@@ -51,145 +46,107 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
 
   const uncomittedUpdateTasks = useRef<Task[]>([]);
 
-  function addColumn(name: string = 'New Area') {
-    startTransition(async () => {
-      let newRank = LexoRank.middle().format();
-      if (kanban.length) {
-        const sortedColumn = kanban.toSorted((a, b) =>
-          a.sort_rank.localeCompare(b.sort_rank)
-        );
-        const lastColumn = sortedColumn.at(-1);
-        newRank = LexoRank.parse(lastColumn!.sort_rank).genNext().format();
-      }
-      const newId = self.crypto.randomUUID();
-      const newColumn: Column = {
-        id: newId,
-        name: name,
-        tasks: [],
-        board_id: boardId,
-        sort_rank: newRank,
-      };
-      addKanbanOptimistic([...kanban, newColumn]);
-      const succeed = await addColumnAction(boardId, newColumn);
-      if (succeed) {
-        setKanban([...kanban, newColumn]);
-      }
-    });
+  async function addColumn(name: string = 'New Area') {
+    let newRank = LexoRank.middle().format();
+    if (kanban.length) {
+      const sortedColumn = kanban.toSorted((a, b) =>
+        a.sort_rank.localeCompare(b.sort_rank)
+      );
+      const lastColumn = sortedColumn.at(-1);
+      newRank = LexoRank.parse(lastColumn!.sort_rank).genNext().format();
+    }
+    const newId = self.crypto.randomUUID();
+    const newColumn: Column = {
+      id: newId,
+      name: name,
+      tasks: [],
+      board_id: boardId,
+      sort_rank: newRank,
+    };
+    setKanban([...kanban, newColumn]);
+    const succeed = await addColumnAction(boardId, newColumn);
+    if (!succeed) {
+      router.refresh();
+    }
   }
 
-  function addTask(columnId: string, name: string = 'New Task') {
-    startTransition(async () => {
-      const column = kanban.find((column) => column.id == columnId);
-      if (!column) {
-        return;
-      }
-      let newRank = LexoRank.middle().format();
-      if (column.tasks.length) {
-        const sortedTasks: Task[] = column.tasks.toSorted((a, b) =>
-          a.sort_rank.localeCompare(b.sort_rank)
-        );
-        const lastTask = sortedTasks.at(-1);
-        newRank = LexoRank.parse(lastTask!.sort_rank).genNext().format();
-      }
-      const newId = self.crypto.randomUUID();
-      const newTask: Task = {
-        id: newId,
-        name: name,
-        column_id: columnId,
-        sort_rank: newRank,
-      };
-      addKanbanOptimistic(
-        // TODO: setStateと全体的に重複しているので直したい
-        kanban.map((column) => {
-          if (column.id === columnId) {
-            return {
-              ...column,
-              tasks: [...column.tasks, newTask],
-            };
-          }
-          return column;
-        })
+  async function addTask(columnId: string, name: string = 'New Task') {
+    const column = kanban.find((column) => column.id == columnId);
+    if (!column) {
+      return;
+    }
+    let newRank = LexoRank.middle().format();
+    if (column.tasks.length) {
+      const sortedTasks: Task[] = column.tasks.toSorted((a, b) =>
+        a.sort_rank.localeCompare(b.sort_rank)
       );
-      const succeed = await addTaskAction(newTask);
-      if (!succeed) {
-        return;
-      }
-      setKanban(
-        kanban.map((column) => {
-          if (column.id === columnId) {
-            return {
-              ...column,
-              tasks: [...column.tasks, newTask],
-            };
-          }
-          return column;
-        })
-      );
-    });
+      const lastTask = sortedTasks.at(-1);
+      newRank = LexoRank.parse(lastTask!.sort_rank).genNext().format();
+    }
+    const newId = self.crypto.randomUUID();
+    const newTask: Task = {
+      id: newId,
+      name: name,
+      column_id: columnId,
+      sort_rank: newRank,
+    };
+    setKanban(
+      kanban.map((column) => {
+        if (column.id === columnId) {
+          return {
+            ...column,
+            tasks: [...column.tasks, newTask],
+          };
+        }
+        return column;
+      })
+    );
+    const succeed = await addTaskAction(newTask);
+    if (!succeed) {
+      router.refresh();
+    }
   }
 
-  function deleteColumn(columnId: string) {
-    startTransition(async () => {
-      addKanbanOptimistic(kanban.filter((column) => column.id !== columnId));
-      const succeed = await deleteColumnAction(columnId);
-      if (succeed) {
-        setKanban(kanban.filter((column) => column.id !== columnId));
-      }
-    });
+  async function deleteColumn(columnId: string) {
+    setKanban(kanban.filter((column) => column.id !== columnId));
+    const succeed = await deleteColumnAction(columnId);
+    if (!succeed) {
+      router.refresh();
+    }
   }
 
-  function editColumn(columnId: string, newName: string) {
-    startTransition(async () => {
-      addKanbanOptimistic(
-        kanban.map((column) => {
-          if (column.id === columnId) {
-            return { ...column, name: newName };
-          }
-          return column;
-        })
-      );
-      const succeed = await renameColumnAction(columnId, newName);
-      if (!succeed) {
-        return;
-      }
-      setKanban(
-        kanban.map((column) => {
-          if (column.id === columnId) {
-            return { ...column, name: newName };
-          }
-          return column;
-        })
-      );
-    });
+  async function editColumn(columnId: string, newName: string) {
+    setKanban(
+      kanban.map((column) => {
+        if (column.id === columnId) {
+          return { ...column, name: newName };
+        }
+        return column;
+      })
+    );
+    const succeed = await renameColumnAction(columnId, newName);
+    if (!succeed) {
+      router.refresh();
+    }
   }
 
   function startEditingTask(id: string) {
     setEditingTaskId(id);
   }
 
-  function deleteTask(taskId: string) {
-    startTransition(async () => {
-      addKanbanOptimistic(
-        kanban.map((column) => {
-          return {
-            ...column,
-            tasks: column.tasks.filter((task) => task.id !== taskId),
-          };
-        })
-      );
-      const succeed = await deleteTaskAction(taskId);
-      if (!succeed) {
-        return;
-      }
-      setKanban(
-        kanban.map((column) => {
-          return {
-            ...column,
-            tasks: column.tasks.filter((task) => task.id !== taskId),
-          };
-        })
-      );
-    });
+  async function deleteTask(taskId: string) {
+    setKanban(
+      kanban.map((column) => {
+        return {
+          ...column,
+          tasks: column.tasks.filter((task) => task.id !== taskId),
+        };
+      })
+    );
+    const succeed = await deleteTaskAction(taskId);
+    if (!succeed) {
+      router.refresh();
+    }
   }
 
   function stopEditingTask() {
@@ -256,31 +213,29 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
     setDraggingTaskId(null);
   }
 
-  function handleDragEnd({ active, over }: DragEndEvent) {
+  async function handleDragEnd({ active, over }: DragEndEvent) {
     setDraggingTaskId(null);
-    startTransition(async () => {
-      const newKanban = moveKanbanTask({ active, over, kanban: kanban });
-      addKanbanOptimistic(newKanban);
-      const updatedTaskId = active.id.toString();
-      let updatedTask: Task | undefined;
-      newKanban.forEach((column) => {
-        if (!updatedTask) {
-          updatedTask = column.tasks.find((task) => task.id === updatedTaskId);
-        }
-      });
-      console.log(updatedTaskId);
-      console.log(updatedTask);
-      if (updatedTask) {
-        const succeed = await moveTaskAction(
-          updatedTaskId,
-          updatedTask.sort_rank,
-          updatedTask.column_id
-        );
-        if (succeed) {
-          setKanban(newKanban);
-        }
+    const newKanban = moveKanbanTask({ active, over, kanban: kanban });
+    const updatedTaskId = active.id.toString();
+    let updatedTask: Task | undefined;
+    newKanban.forEach((column) => {
+      if (!updatedTask) {
+        updatedTask = column.tasks.find((task) => task.id === updatedTaskId);
       }
     });
+    console.log(updatedTaskId);
+    console.log(updatedTask);
+    if (updatedTask) {
+      setKanban(newKanban);
+      const succeed = await moveTaskAction(
+        updatedTaskId,
+        updatedTask.sort_rank,
+        updatedTask.column_id
+      );
+      if (!succeed) {
+        router.refresh();
+      }
+    }
   }
 
   function handleDragOver({ active, over }: DragOverEvent) {
