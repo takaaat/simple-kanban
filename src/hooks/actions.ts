@@ -26,9 +26,6 @@ export async function addTaskAction(newTask: Task): Promise<boolean> {
   if (error) {
     return false;
   }
-  if (error) {
-    console.log(error);
-  }
   return true;
 }
 
