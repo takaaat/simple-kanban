@@ -223,8 +223,6 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
         updatedTask = column.tasks.find((task) => task.id === updatedTaskId);
       }
     });
-    console.log(updatedTaskId);
-    console.log(updatedTask);
     if (updatedTask) {
       setKanban(newKanban);
       const succeed = await moveTaskAction(
@@ -258,7 +256,6 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
     activeSortedIndex: number,
     overSortedIndex: number
   ): Task[] {
-    console.log('lexo move発火');
     const currentColumnFromSorted = sortedColumns.find(
       (column) => column.id === columnId
     );
@@ -266,6 +263,8 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
     if (!currentColumnFromSorted) {
       throw new Error('対応するColumnが見つからない');
     }
+
+    const activeFromSorted = currentColumnFromSorted.tasks[activeSortedIndex];
 
     let prevIndex: number;
     let nextIndex: number;
@@ -277,9 +276,14 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
       nextIndex = overSortedIndex + 1;
     }
 
-    const activeFromSorted = currentColumnFromSorted.tasks[activeSortedIndex];
-    const prevTask = currentColumnFromSorted.tasks[prevIndex];
-    const nextTask = currentColumnFromSorted.tasks[nextIndex];
+    const prevTask =
+      prevIndex === activeSortedIndex
+        ? currentColumnFromSorted.tasks[prevIndex - 1]
+        : currentColumnFromSorted.tasks[prevIndex];
+    const nextTask =
+      nextIndex === activeSortedIndex
+        ? currentColumnFromSorted.tasks[nextIndex + 1]
+        : currentColumnFromSorted.tasks[nextIndex];
 
     let newRank: string;
 
@@ -314,7 +318,6 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
     activeIndex: number,
     overIndex: number
   ): Column[] {
-    console.log('move task between co発火');
     const activeColumn = sortedColumns.find(
       (column) => column.id === activeContainer
     );
