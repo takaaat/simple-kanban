@@ -1,11 +1,11 @@
 'use client';
 
 import {
-  closestCenter,
   DndContext,
   DragOverlay,
   KeyboardSensor,
   MouseSensor,
+  pointerWithin,
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
@@ -54,7 +54,7 @@ export function KanbanView({ slug, boardId, kanbanData }: KanbanViewProps) {
       <div className="flex-1 min-h-0 flex flex-col">
         <DndContext
           sensors={sensors}
-          collisionDetection={closestCenter}
+          collisionDetection={pointerWithin}
           onDragEnd={handleDragEnd}
           onDragStart={handleDragStart}
           onDragCancel={handleDragCancel}
