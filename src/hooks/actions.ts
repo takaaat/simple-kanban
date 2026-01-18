@@ -14,7 +14,6 @@ export async function addColumnAction(
     .from('columns')
     .insert(newColumnWithoutChildren);
   if (error) {
-    console.log(error);
     return false;
   }
   return true;
