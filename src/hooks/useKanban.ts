@@ -203,7 +203,7 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
   }, [editingTaskId]);
 
   const activeTask = kanban
-    .flatMap((area) => area.tasks)
+    .flatMap((column) => column.tasks)
     .find((task) => task.id === draggingTaskId);
 
   function handleDragStart({ active }: DragStartEvent) {
@@ -390,18 +390,20 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
     const overContainer = over.data.current?.sortable.containerId || over.id;
     if (active.id !== over.id) {
       const activeIndex: number = active.data.current.sortable.index;
-      const overIndex: number = kanban.some((area) => area.id === over.id)
-        ? kanban.find((area) => area.id === overContainer)!.tasks.length
+      const overIndex: number = kanban.some((column) => column.id === over.id)
+        ? kanban.find((column) => column.id === overContainer)!.tasks.length
         : over.data.current!.sortable.index;
 
       let newKanban: Column[];
       if (activeContainer === overContainer) {
-        const currentArea = kanban.find((area) => area.id === activeContainer);
-        if (!currentArea) {
+        const currentColumn = kanban.find(
+          (column) => column.id === activeContainer
+        );
+        if (!currentColumn) {
           return kanban;
         }
         newKanban = kanban.map((column) => {
-          if (column.id !== currentArea.id) {
+          if (column.id !== currentColumn.id) {
             return column;
           }
           return {
@@ -434,9 +436,9 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
     draggingTaskId,
     activeTask,
     addTask,
-    addArea: addColumn,
-    deleteArea: deleteColumn,
-    editArea: editColumn,
+    addColumn,
+    deleteColumn,
+    editColumn,
     startEditingTask,
     deleteTask,
     stopEditingTask,
