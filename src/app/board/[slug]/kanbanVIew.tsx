@@ -28,9 +28,9 @@ export function KanbanView({ slug, boardId, kanbanData }: KanbanViewProps) {
     draggingTaskId,
     activeTask,
     addTask,
-    addArea,
-    editArea,
-    deleteArea,
+    addColumn,
+    editColumn,
+    deleteColumn,
     startEditingTask,
     deleteTask,
     stopEditingTask,
@@ -68,8 +68,8 @@ export function KanbanView({ slug, boardId, kanbanData }: KanbanViewProps) {
                   key={area.id}
                   id={area.id}
                   area={area}
-                  editArea={editArea}
-                  deleteArea={deleteArea}
+                  editArea={editColumn}
+                  deleteArea={deleteColumn}
                   editingTaskId={editingTaskId}
                   startEditingTask={startEditingTask}
                   stopEditingTask={stopEditingTask}
@@ -83,7 +83,7 @@ export function KanbanView({ slug, boardId, kanbanData }: KanbanViewProps) {
               className="rounded border border-neutral-300 px-4 py-3 bg-white text-neutral-600 hover:bg-neutral-100 transition h-7 flex items-center justify-center cursor-pointer"
               type="button"
               onClick={() => {
-                addArea();
+                addColumn();
               }}
             >
               + Area
