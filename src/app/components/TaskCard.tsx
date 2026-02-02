@@ -44,6 +44,11 @@ export const TaskCard = forwardRef<HTMLDivElement, Props>(
             onChange={(e) => editTask(task, e.target.value)}
             className="w-full p-2"
             onBlur={handleBlur}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleBlur();
+              }
+            }}
           />
         ) : (
           <div className="flex justify-between">
