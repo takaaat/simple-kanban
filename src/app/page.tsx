@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
+import { logout } from './login/actions';
 
 export default async function Page() {
   const supabase = await createClient();
@@ -21,6 +22,12 @@ export default async function Page() {
           {board.title} (/{board.slug})
         </Link>
       ))}
+
+      <div className="pt-5">
+        <form action={logout}>
+          <button className="p-2 border-1 cursor-pointer">ログアウト</button>
+        </form>
+      </div>
     </div>
   );
 }
