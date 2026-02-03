@@ -42,7 +42,7 @@ const ColumnComponent = ({
     >
       <div
         ref={setNodeRef}
-        className="w-100 h-full min-h-0 flex flex-col border-2 p-2 overflow-hidden"
+        className="w-100 h-full min-h-0 flex flex-col p-3 overflow-hidden bg-gray-50 border border-gray-200 rounded-lg shadow-2xs"
       >
         <div className="flex justify-between flex-none">
           <div className="pb-1">{area.name}</div>

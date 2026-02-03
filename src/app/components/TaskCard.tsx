@@ -36,7 +36,10 @@ export const TaskCard = forwardRef<HTMLDivElement, Props>(
     }, [editingTaskId, task.id]);
 
     return (
-      <div ref={ref} className="bg-white w-full text-lg border-2 mb-2">
+      <div
+        ref={ref}
+        className="bg-white w-full text-lg border border-gray-300 mb-2 rounded-lg shadow-sm"
+      >
         {task.id === editingTaskId ? (
           <input
             ref={inputRef}
@@ -60,7 +63,7 @@ export const TaskCard = forwardRef<HTMLDivElement, Props>(
             </button>
             <button
               type="button"
-              className="bg-amber-200 w-10 cursor-pointer"
+              className="w-10 cursor-pointer"
               onClick={handleDelete}
             >
               D
