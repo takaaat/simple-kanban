@@ -96,7 +96,7 @@ const ColumnComponent = ({
           ))}
         </div>
         <button
-          className="w-full rounded border border-neutral-300 text-neutral-600 hover:bg-neutral-100 transition mt-2 text-center bg-white cursor-pointer flex-none"
+          className="w-full rounded-lg border border-neutral-300 text-neutral-600 hover:bg-neutral-100 transition mt-2 text-center  cursor-pointer flex-none border-dashed"
           onClick={() => {
             addTask(area.id);
           }}
