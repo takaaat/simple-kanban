@@ -80,13 +80,13 @@ export function KanbanView({ slug, boardId, kanbanData }: KanbanViewProps) {
               );
             })}
             <button
-              className="rounded border border-neutral-300 px-4 py-3 bg-white text-neutral-600 hover:bg-neutral-100 transition h-7 flex items-center justify-center cursor-pointer"
+              className="rounded-lg border border-gray-200 px-4 py-3 bg-gray-50 text-neutral-600 hover:bg-gray-100 transition h-7 flex items-center justify-center cursor-pointer shadow-2xs flex-shrink-0 whitespace-nowrap"
               type="button"
               onClick={() => {
                 addColumn();
               }}
             >
-              + Area
+              + Column
             </button>
           </div>
           <DragOverlay>
