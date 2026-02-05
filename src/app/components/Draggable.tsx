@@ -28,7 +28,7 @@ export function Draggable({ taskId, editingTaskId, children }: Props) {
   const dragListeners = taskId === editingTaskId ? {} : listeners;
 
   return (
-    <div ref={setNodeRef} style={style}>
+    <div ref={setNodeRef} style={style} className="mb-2">
       <div {...attributes} {...dragListeners}>
         {children}
       </div>
