@@ -38,7 +38,7 @@ export const TaskCard = forwardRef<HTMLDivElement, Props>(
     return (
       <div
         ref={ref}
-        className="bg-white w-full text-lg border border-gray-300 mb-2 rounded-lg shadow-sm"
+        className="bg-white w-full text-lg border border-gray-300 rounded-lg shadow-sm"
       >
         {task.id === editingTaskId ? (
           <input
