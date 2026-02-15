@@ -80,7 +80,7 @@ export function KanbanView({ slug, boardId, kanbanData }: KanbanViewProps) {
               );
             })}
             <button
-              className="rounded-lg border border-gray-200 px-4 py-3 bg-gray-50 text-neutral-600 hover:bg-gray-100 transition h-7 flex items-center justify-center cursor-pointer shadow-2xs flex-shrink-0 whitespace-nowrap"
+              className="rounded-lg border border-gray-200 px-4 py-3 bg-gray-50 text-neutral-600 hover:bg-gray-100 transition h-7 flex items-center justify-center cursor-pointer shadow-2xs shrink-0 whitespace-nowrap"
               type="button"
               onClick={() => {
                 addColumn();

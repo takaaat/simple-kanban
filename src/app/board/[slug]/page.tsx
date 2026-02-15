@@ -2,45 +2,46 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { KanbanView } from './kanbanVIew';
+import { Column } from '@/types/types';
 
 export default async function Home({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  console.log('start loading');
   const { slug } = await params;
   const supabase = await createClient();
-  // RLS前提
-  const board = await supabase
-    .from('boards')
-    .select('id')
-    .eq('slug', slug)
-    .limit(1)
-    .single();
-  if (board.error || !board.data) {
-    return <div>Board not found.</div>;
-  }
-  const boardId = board.data.id;
 
-  const { data, error } = await supabase
-    .from('columns')
+  const { data: board, error } = await supabase
+    .from('boards')
     .select(
       `
-    id,
-    name,
-    board_id,
-    sort_rank,
-    tasks (
       id,
-      name,
-      column_id,
-      sort_rank
+      slug,
+      columns (
+        id,
+        name,
+        board_id,
+        sort_rank,
+        tasks (
+          id,
+          name,
+          column_id,
+          sort_rank
+        )
+      )
+    `
     )
-  `
-    )
-    .eq('board_id', boardId);
-  if (error || !data) {
+    .eq('slug', slug)
+    .single();
+
+  if (error || !board) {
     return <div></div>;
   }
-  return <KanbanView slug={slug} boardId={boardId} kanbanData={data} />;
+
+  const kanbanData = board.columns as unknown as Column[];
+
+  console.log('got columns');
+  return <KanbanView slug={slug} boardId={board.id} kanbanData={kanbanData} />;
 }

@@ -17,7 +17,7 @@ export default async function Page() {
           <h1 className="text-3xl py-3">かんばんリスト</h1>
           <div className="">
             <form action={logout}>
-              <button className="p-2 border-1 cursor-pointer hover:bg-gray-600 hover:text-white transition-colors">
+              <button className="p-2 border cursor-pointer hover:bg-gray-600 hover:text-white transition-colors">
                 ログアウト
               </button>
             </form>
