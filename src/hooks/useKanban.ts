@@ -69,7 +69,7 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
     }
   }
 
-  async function addTask(columnId: string, name: string = 'New Task') {
+  async function addTask(columnId: string, name: string = '') {
     const column = kanban.find((column) => column.id == columnId);
     if (!column) {
       return;
@@ -100,6 +100,9 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
         return column;
       })
     );
+
+    setEditingTaskId(newId);
+
     const succeed = await addTaskAction(newTask);
     if (!succeed) {
       router.refresh();
