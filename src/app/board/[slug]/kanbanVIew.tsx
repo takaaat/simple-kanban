@@ -14,6 +14,7 @@ import { TaskCard } from '../../components/TaskCard';
 import ColumnComponent from '../../components/Column';
 import { useKanban } from '../../../hooks/useKanban';
 import { Column } from '@/types/types';
+import Link from 'next/link';
 
 interface KanbanViewProps {
   slug: string;
@@ -50,7 +51,12 @@ export function KanbanView({ slug, boardId, kanbanData }: KanbanViewProps) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <p className="pt-3 pl-5">Board: {slug}</p>
+      <p className="pt-3 pl-5">
+        <Link href="/" className="underline">
+          board
+        </Link>{' '}
+        / {slug}
+      </p>
       <div className="flex-1 min-h-0 flex flex-col">
         <DndContext
           sensors={sensors}
