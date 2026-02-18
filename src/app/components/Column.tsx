@@ -17,6 +17,7 @@ type Props = {
   deleteTask: (taskId: string) => void;
   addTask: (areaId: string) => void;
   editArea: (areaId: string, newName: string) => void;
+  moveColumn: (columnId: string, newPosition: number) => void;
   deleteArea: (areaId: string) => void;
 };
 
@@ -25,6 +26,7 @@ const ColumnComponent = ({
   area,
   id,
   startEditingTask,
+  moveColumn,
   editArea,
   deleteArea,
   stopEditingTask,
@@ -55,7 +57,13 @@ const ColumnComponent = ({
                 if (newName === null) {
                   return;
                 }
-
+                if (newName.startsWith('.') || newName.startsWith('#')) {
+                  const newPosition = parseInt(newName.slice(1));
+                  if (!Number.isNaN(newPosition)) {
+                    moveColumn(area.id, newPosition);
+                    return;
+                  }
+                }
                 editArea(area.id, newName);
               }}
               aria-label="Edit column"

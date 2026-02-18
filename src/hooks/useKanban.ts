@@ -13,6 +13,7 @@ import {
   addTaskAction,
   deleteColumnAction,
   deleteTaskAction,
+  moveColumnAction,
   moveTaskAction,
   renameColumnAction,
   renameTaskAction,
@@ -112,6 +113,57 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
   async function deleteColumn(columnId: string) {
     setKanban(kanban.filter((column) => column.id !== columnId));
     const succeed = await deleteColumnAction(columnId);
+    if (!succeed) {
+      router.refresh();
+    }
+  }
+
+  async function moveColumn(columnId: string, newPosition: number) {
+    const currentColumnPosition = sortedColumns.findIndex(
+      (column) => column.id === columnId
+    );
+    let prevIndex: number;
+    let nextIndex: number;
+    if (currentColumnPosition > newPosition) {
+      prevIndex = newPosition - 1;
+      nextIndex = newPosition;
+    } else {
+      prevIndex = newPosition;
+      nextIndex = newPosition + 1;
+    }
+
+    const prevColumn =
+      prevIndex === currentColumnPosition
+        ? sortedColumns[prevIndex - 1]
+        : sortedColumns[prevIndex];
+    const nextColumn =
+      nextIndex === currentColumnPosition
+        ? sortedColumns[nextIndex + 1]
+        : sortedColumns[nextIndex];
+
+    let newRank: string;
+
+    if (!prevColumn && !nextColumn) {
+      return;
+    } else if (!prevColumn) {
+      newRank = LexoRank.parse(nextColumn.sort_rank).genPrev().format();
+    } else if (!nextColumn) {
+      newRank = LexoRank.parse(prevColumn.sort_rank).genNext().format();
+    } else {
+      newRank = LexoRank.parse(prevColumn.sort_rank)
+        .between(LexoRank.parse(nextColumn.sort_rank))
+        .format();
+    }
+
+    setKanban(
+      kanban.map((column) => {
+        if (column.id === columnId) {
+          return { ...column, sort_rank: newRank };
+        }
+        return column;
+      })
+    );
+    const succeed = await moveColumnAction(columnId, newRank);
     if (!succeed) {
       router.refresh();
     }
@@ -270,6 +322,7 @@ export function useKanban(initialKanbanData: Column[], boardId: string) {
     addTask,
     addColumn,
     deleteColumn,
+    moveColumn,
     editColumn,
     startEditingTask,
     deleteTask,
