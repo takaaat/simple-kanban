@@ -31,6 +31,7 @@ export function KanbanView({ slug, boardId, kanbanData }: KanbanViewProps) {
     addTask,
     addColumn,
     editColumn,
+    moveColumn,
     deleteColumn,
     startEditingTask,
     deleteTask,
@@ -76,6 +77,7 @@ export function KanbanView({ slug, boardId, kanbanData }: KanbanViewProps) {
                   area={area}
                   editArea={editColumn}
                   deleteArea={deleteColumn}
+                  moveColumn={moveColumn}
                   editingTaskId={editingTaskId}
                   startEditingTask={startEditingTask}
                   stopEditingTask={stopEditingTask}

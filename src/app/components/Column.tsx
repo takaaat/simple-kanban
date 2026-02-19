@@ -17,6 +17,7 @@ type Props = {
   deleteTask: (taskId: string) => void;
   addTask: (areaId: string) => void;
   editArea: (areaId: string, newName: string) => void;
+  moveColumn: (columnId: string, newPosition: number) => void;
   deleteArea: (areaId: string) => void;
 };
 
@@ -25,6 +26,7 @@ const ColumnComponent = ({
   area,
   id,
   startEditingTask,
+  moveColumn,
   editArea,
   deleteArea,
   stopEditingTask,
@@ -51,11 +53,20 @@ const ColumnComponent = ({
               type="button"
               className="cursor-pointer p-1 hover:bg-gray-200 rounded transition text-gray-400 hover:text-gray-600"
               onClick={() => {
-                const newName = window.prompt('Type new area name:', area.name);
+                const newName = window.prompt(
+                  'Column名を入力してください。「#0」や「.1」のようにはじめに#または.を入力したのち番号を指定するとその位置にColumnを移動します。',
+                  area.name
+                );
                 if (newName === null) {
                   return;
                 }
-
+                if (newName.startsWith('.') || newName.startsWith('#')) {
+                  const newPosition = parseInt(newName.slice(1));
+                  if (!Number.isNaN(newPosition)) {
+                    moveColumn(area.id, newPosition);
+                    return;
+                  }
+                }
                 editArea(area.id, newName);
               }}
               aria-label="Edit column"

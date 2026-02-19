@@ -46,6 +46,21 @@ export async function deleteColumnAction(columnId: string): Promise<boolean> {
   return true;
 }
 
+export async function moveColumnAction(
+  columnId: string,
+  newRank: string
+): Promise<boolean> {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from('columns')
+    .update({ sort_rank: newRank })
+    .eq('id', columnId);
+  if (error) {
+    return false;
+  }
+  return true;
+}
+
 export async function renameColumnAction(
   columnId: string,
   newName: string
