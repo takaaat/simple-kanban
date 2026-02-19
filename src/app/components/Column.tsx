@@ -53,7 +53,10 @@ const ColumnComponent = ({
               type="button"
               className="cursor-pointer p-1 hover:bg-gray-200 rounded transition text-gray-400 hover:text-gray-600"
               onClick={() => {
-                const newName = window.prompt('Type new area name:', area.name);
+                const newName = window.prompt(
+                  'Column名を入力してください。「#0」や「.1」のようにはじめに#または.を入力したのち番号を指定するとその位置にColumnを移動します。',
+                  area.name
+                );
                 if (newName === null) {
                   return;
                 }
