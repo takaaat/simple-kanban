@@ -4,18 +4,29 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import { createClient } from '@/lib/supabase/server';
+import { accountSchema } from '@/validations/accounts';
+import z from 'zod';
 
 export async function signupAction(_: string | null, formData: FormData) {
   const supabase = await createClient();
 
-  // type-casting here for convenience
-  // in practice, you should validate your inputs
   const data = {
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
+    email: formData.get('email'),
+    password: formData.get('password'),
   };
 
-  const { error } = await supabase.auth.signUp(data);
+  const parsed = accountSchema.safeParse(data);
+
+  if (!parsed.success) {
+    const errors = z.flattenError(parsed.error);
+    return (
+      errors.fieldErrors.email?.[0] ??
+      errors.fieldErrors.password?.[0] ??
+      '入力内容を確認してください'
+    );
+  }
+
+  const { error } = await supabase.auth.signUp(parsed.data);
 
   if (error) {
     return '新規登録に失敗しました。';
