@@ -15,7 +15,7 @@ export async function logout() {
   redirect('/');
 }
 
-export async function login(formData: FormData) {
+export async function loginAction(_: string | null, formData: FormData) {
   const supabase = await createClient();
 
   // type-casting here for convenience
@@ -28,7 +28,7 @@ export async function login(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword(data);
 
   if (error) {
-    redirect('/error');
+    return 'ログインに失敗しました。';
   }
 
   revalidatePath('/', 'layout');

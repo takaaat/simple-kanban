@@ -1,6 +1,10 @@
-import { login, signup } from './actions';
+'use client';
+
+import { useActionState } from 'react';
+import { loginAction } from './actions';
 
 export default function LoginPage() {
+  const [message, formAction, isPending] = useActionState(loginAction, null);
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="w-full max-w-sm">
@@ -42,18 +46,16 @@ export default function LoginPage() {
 
             <div className="flex gap-2 pt-2">
               <button
-                formAction={login}
-                className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 cursor-pointer"
+                formAction={formAction}
+                disabled={isPending}
+                data-pending={isPending ? '' : undefined}
+                className="flex-1 rounded bg-blue-600 py-2 text-white hover:bg-blue-700 data-pending:bg-gray-500 data-pending:hover:bg-gray-500"
               >
-                ログイン
-              </button>
-              <button
-                formAction={signup}
-                className="flex-1 bg-gray-100 text-gray-700 py-2 rounded hover:bg-gray-200 cursor-pointer"
-              >
-                新規登録
+                {isPending ? 'ログイン中です...' : 'ログイン'}
               </button>
             </div>
+
+            <div className="text-red-500">{message}</div>
           </form>
         </div>
       </div>
