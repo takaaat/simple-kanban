@@ -1,8 +1,9 @@
 create table boards (
     id uuid default gen_random_uuid() primary key,
-    slug text,
+    slug text not null,
     user_id uuid references auth.users not null,
-    title text
+    title text not null,
+    unique (user_id, slug)
 );
 
 create table columns (
