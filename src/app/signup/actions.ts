@@ -5,17 +5,7 @@ import { redirect } from 'next/navigation';
 
 import { createClient } from '@/lib/supabase/server';
 
-export async function logout() {
-  const supabase = await createClient();
-  const { error } = await supabase.auth.signOut();
-  if (error) {
-    redirect('/error');
-  }
-  revalidatePath('/', 'layout');
-  redirect('/');
-}
-
-export async function loginAction(_: string | null, formData: FormData) {
+export async function signupAction(_: string | null, formData: FormData) {
   const supabase = await createClient();
 
   // type-casting here for convenience
@@ -25,10 +15,10 @@ export async function loginAction(_: string | null, formData: FormData) {
     password: formData.get('password') as string,
   };
 
-  const { error } = await supabase.auth.signInWithPassword(data);
+  const { error } = await supabase.auth.signUp(data);
 
   if (error) {
-    return 'ログインに失敗しました。';
+    return '新規登録に失敗しました。';
   }
 
   revalidatePath('/', 'layout');
