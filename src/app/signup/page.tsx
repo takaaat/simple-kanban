@@ -1,16 +1,18 @@
 'use client';
 
 import { useActionState } from 'react';
-import { loginAction } from './actions';
+import { signupAction } from './actions';
 import Link from 'next/link';
 
 export default function LoginPage() {
-  const [message, formAction, isPending] = useActionState(loginAction, null);
+  const [message, formAction, isPending] = useActionState(signupAction, null);
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="w-full max-w-sm">
         <div className="bg-white shadow p-8">
-          <h1 className="text-2xl font-semibold text-center mb-6">ログイン</h1>
+          <h1 className="text-2xl font-semibold text-center mb-6">
+            アカウント登録
+          </h1>
 
           <form className="space-y-4">
             <div>
@@ -52,12 +54,12 @@ export default function LoginPage() {
                 data-pending={isPending ? '' : undefined}
                 className="flex-1 rounded bg-blue-600 py-2 text-white hover:bg-blue-700 data-pending:bg-gray-500 data-pending:hover:bg-gray-500 cursor-pointer"
               >
-                {isPending ? 'ログイン中です...' : 'ログイン'}
+                {isPending ? '処理中です...' : '新規登録'}
               </button>
             </div>
 
-            <Link href="/signup" className="text-blue-600">
-              アカウントの新規登録はこちらから
+            <Link href="/login" className="text-blue-600">
+              登録済みの方はこちらからログイン
             </Link>
 
             <div className="text-red-500">{message}</div>
