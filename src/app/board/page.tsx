@@ -27,15 +27,16 @@ export default async function Page() {
         <div className="my-2">
           <EditButtonAndModal />
         </div>
-        {boards.data.map((board) => (
-          <Link
-            href={'/board/' + board.slug}
-            className="text-blue-500 text-xl hover:text-blue-700"
-            key={board.slug}
-          >
-            {board.title} (/{board.slug})
-          </Link>
-        ))}
+        <div className="grid grid-cols-5 gap-3">
+          {boards.data.map((board) => (
+            <Link href={'/board/' + board.slug} key={board.slug}>
+              <div className="h-40 p-6 shadow-xs rounded-xl bg-white cursor-pointer hover:bg-gray-200 duration-200">
+                <div className="text-xl">{board.title}</div>
+                <div className="text-gray-600">/{board.slug}</div>
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   );
