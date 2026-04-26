@@ -53,7 +53,7 @@ export function KanbanView({ slug, boardId, kanbanData }: KanbanViewProps) {
   return (
     <div className="min-h-screen flex flex-col">
       <p className="pt-3 pl-5">
-        <Link href="/" className="underline">
+        <Link href="/board" className="underline">
           board
         </Link>{' '}
         / {slug}

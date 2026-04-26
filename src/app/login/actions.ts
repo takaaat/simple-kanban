@@ -14,7 +14,7 @@ export async function logout() {
     redirect('/error');
   }
   revalidatePath('/', 'layout');
-  redirect('/');
+  redirect('/login');
 }
 
 export async function loginAction(_: string | null, formData: FormData) {
@@ -42,6 +42,6 @@ export async function loginAction(_: string | null, formData: FormData) {
     return 'ログインに失敗しました。';
   }
 
-  revalidatePath('/', 'layout');
-  redirect('/');
+  revalidatePath('/board', 'layout');
+  redirect('/board');
 }
