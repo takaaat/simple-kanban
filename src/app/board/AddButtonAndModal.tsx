@@ -3,7 +3,7 @@
 import { useActionState, useState } from 'react';
 import { createBoardAction } from './actions';
 
-export default function EditButtonAndModal() {
+export default function AddButtonAndModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [idInput, setIdInput] = useState('');
   const [titleInput, setTitleInput] = useState('');
@@ -20,14 +20,14 @@ export default function EditButtonAndModal() {
   );
 
   return (
-    <div className="relative inline-block">
+    <div className="relative w-full">
       <button
         onClick={() => {
           setIsOpen(true);
           setIdInput('');
           setTitleInput('');
         }}
-        className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 cursor-pointer"
+        className="h-40 w-full p-6 shadow-xs rounded-xl bg-white cursor-pointer hover:bg-gray-200 duration-200"
       >
         かんばんを作成
       </button>
