@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 import { logout } from '../login/actions';
+import EditButtonAndModal from './AddButtonAndModal';
 
 export default async function Page() {
   const supabase = await createClient();
@@ -24,9 +25,7 @@ export default async function Page() {
           </div>
         </div>
         <div className="my-2">
-          <button className="p-2 border cursor-pointer hover:bg-gray-600 hover:text-white transition-colors">
-            新規作成
-          </button>
+          <EditButtonAndModal />
         </div>
         {boards.data.map((board) => (
           <Link
