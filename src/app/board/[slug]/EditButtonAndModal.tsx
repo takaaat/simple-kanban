@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useActionState } from 'react';
-import { editBoardAction } from '../actions';
+import { deleteBoardAction, editBoardAction } from '../actions';
 
 type Props = {
   currentSlug: string;
@@ -18,7 +18,18 @@ export default function EditButtonAndModal({
   const [slugInput, setSlugInput] = useState(currentSlug);
   const [titleInput, setTitleInput] = useState(currentTitle);
 
-  const [message, formAction, isPending] = useActionState(
+  const [deleteMessage, deleteFormAction, isDeletePending] = useActionState(
+    async (_: string | null, formData: FormData) => {
+      const m = await deleteBoardAction(boardId);
+      if (m === null) {
+        setIsOpen(false);
+      }
+      return m;
+    },
+    ''
+  );
+
+  const [editMessage, editFormAction, isEditPending] = useActionState(
     async (_: string | null, formData: FormData) => {
       const m = await editBoardAction(boardId, formData);
       if (m === null) {
@@ -55,7 +66,7 @@ export default function EditButtonAndModal({
             </button>
           </div>
 
-          <form className="space-y-3" action={formAction}>
+          <form className="space-y-3">
             <div>
               <label
                 className="mb-1 block text-sm font-medium text-gray-700"
@@ -94,13 +105,14 @@ export default function EditButtonAndModal({
               />
             </div>
 
-            <div className="text-red-500">{message}</div>
+            <div className="text-red-500">{editMessage}</div>
+            <div className="text-red-500">{deleteMessage}</div>
 
             <div className="flex justify-end gap-2 pt-2">
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                disabled={isPending}
+                disabled={isEditPending || isDeletePending}
                 className="rounded-lg border px-3 py-2 text-gray-700 hover:bg-gray-100 cursor-pointer"
               >
                 キャンセル
@@ -108,7 +120,17 @@ export default function EditButtonAndModal({
 
               <button
                 type="submit"
-                disabled={isPending}
+                formAction={deleteFormAction}
+                disabled={isEditPending || isDeletePending}
+                className="rounded-lg bg-red-600 px-3 py-2 text-white hover:bg-red-700 cursor-pointer"
+              >
+                削除
+              </button>
+
+              <button
+                type="submit"
+                formAction={editFormAction}
+                disabled={isEditPending || isDeletePending}
                 className="rounded-lg bg-blue-600 px-3 py-2 text-white hover:bg-blue-700 cursor-pointer"
               >
                 変更

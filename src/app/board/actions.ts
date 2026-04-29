@@ -21,7 +21,7 @@ export async function deleteBoardAction(boardId: string) {
   if (error) {
     return '削除に失敗しました。';
   }
-  revalidatePath('/board');
+  redirect('/board');
   return null;
 }
 
