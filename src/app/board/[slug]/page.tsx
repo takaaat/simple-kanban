@@ -19,6 +19,7 @@ export default async function Home({
       `
       id,
       slug,
+      title,
       columns (
         id,
         name,
@@ -43,5 +44,12 @@ export default async function Home({
   const kanbanData = board.columns as unknown as Column[];
 
   console.log('got columns');
-  return <KanbanView slug={slug} boardId={board.id} kanbanData={kanbanData} />;
+  return (
+    <KanbanView
+      slug={slug}
+      boardId={board.id}
+      title={board.title}
+      kanbanData={kanbanData}
+    />
+  );
 }

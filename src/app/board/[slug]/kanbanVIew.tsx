@@ -15,14 +15,21 @@ import ColumnComponent from '../../components/Column';
 import { useKanban } from '../../../hooks/useKanban';
 import { Column } from '@/types/types';
 import Link from 'next/link';
+import EditButtonAndModal from './EditButtonAndModal';
 
 interface KanbanViewProps {
   slug: string;
+  title: string;
   boardId: string;
   kanbanData: Column[];
 }
 
-export function KanbanView({ slug, boardId, kanbanData }: KanbanViewProps) {
+export function KanbanView({
+  slug,
+  boardId,
+  title,
+  kanbanData,
+}: KanbanViewProps) {
   const {
     sortedColumns,
     editingTaskId,
@@ -52,12 +59,19 @@ export function KanbanView({ slug, boardId, kanbanData }: KanbanViewProps) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <p className="pt-3 pl-5">
-        <Link href="/board" className="underline">
-          board
-        </Link>{' '}
-        / {slug}
-      </p>
+      <div className="bg-gray-100 flex justify-between py-2 px-5">
+        <p className="">
+          <Link href="/board" className="underline">
+            board
+          </Link>{' '}
+          / {slug} {title}
+        </p>
+        <EditButtonAndModal
+          currentSlug={slug}
+          currentTitle={title}
+          boardId={boardId}
+        />
+      </div>
       <div className="flex-1 min-h-0 flex flex-col">
         <DndContext
           sensors={sensors}
