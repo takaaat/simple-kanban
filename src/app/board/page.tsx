@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
-import { logout } from './login/actions';
+import { logout } from '../login/actions';
+import AddButtonAndModal from './AddButtonAndModal';
 
 export default async function Page() {
   const supabase = await createClient();
@@ -23,15 +24,18 @@ export default async function Page() {
             </form>
           </div>
         </div>
-        {boards.data.map((board) => (
-          <Link
-            href={'/board/' + board.slug}
-            className="text-blue-500 text-xl hover:text-blue-700"
-            key={board.slug}
-          >
-            {board.title} (/{board.slug})
-          </Link>
-        ))}
+        <div className="grid grid-cols-5 gap-3 mt-5">
+          {boards.data.map((board) => (
+            <Link href={'/board/' + board.slug} key={board.slug}>
+              <div className="h-40 p-6 shadow-xs rounded-xl bg-white cursor-pointer hover:bg-gray-200 duration-200">
+                <div className="text-xl">{board.title}</div>
+                <div className="text-gray-600">/{board.slug}</div>
+              </div>
+            </Link>
+          ))}
+
+          <AddButtonAndModal />
+        </div>
       </div>
     </div>
   );

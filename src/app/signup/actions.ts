@@ -32,6 +32,6 @@ export async function signupAction(_: string | null, formData: FormData) {
     return '新規登録に失敗しました。';
   }
 
-  revalidatePath('/', 'layout');
-  redirect('/');
+  revalidatePath('/board', 'layout');
+  redirect('/board');
 }
