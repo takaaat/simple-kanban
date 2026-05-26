@@ -1,4 +1,5 @@
 import { Task } from '@/types/types';
+import Link from 'next/link';
 import React, { forwardRef, useEffect, useRef } from 'react';
 
 type Props = {
@@ -59,7 +60,18 @@ export const TaskCard = forwardRef<HTMLDivElement, Props>(
               onClick={startEditingTask}
               className="text-left w-full cursor-pointer p-2"
             >
-              {task.name}
+              {task.name.startsWith('/') ? (
+                <div>
+                  <Link
+                    href={`/board/${task.name.slice(1)}`}
+                    className="cursor-pointer text-blue-500 hover:bg-blue-300"
+                  >
+                    {task.name}
+                  </Link>
+                </div>
+              ) : (
+                <div>{task.name}</div>
+              )}
             </button>
             <button
               type="button"
