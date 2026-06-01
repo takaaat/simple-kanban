@@ -43,7 +43,7 @@ export default function EditButtonAndModal({
   return (
     <div className="relative">
       <div
-        className="hover:bg-gray-300 duration-200 rounded-sm cursor-pointer"
+        className="hover:bg-blue-900 text-blue-100 duration-200 rounded-sm cursor-pointer"
         onClick={() => {
           setIsOpen(true);
           setSlugInput(currentSlug);

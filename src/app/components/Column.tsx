@@ -47,7 +47,7 @@ const ColumnComponent = ({
         className="w-100 h-full min-h-0 flex flex-col p-3 overflow-hidden bg-gray-50 border border-gray-200 rounded-lg shadow-2xs"
       >
         <div className="flex justify-between flex-none">
-          <div className="pb-1">{area.name}</div>
+          <div className="pb-1 font-semibold">{area.name}</div>
           <div className="flex gap-1">
             <button
               type="button"
@@ -138,12 +138,12 @@ const ColumnComponent = ({
           ))}
         </div>
         <button
-          className="w-full rounded-lg border border-neutral-300 text-neutral-600 hover:bg-neutral-100 transition mt-2 text-center  cursor-pointer flex-none border-dashed"
+          className="w-full rounded-lg text-neutral-600 hover:bg-neutral-100 transition mt-2 cursor-pointer flex-none"
           onClick={() => {
             addTask(area.id);
           }}
         >
-          + Add
+          + card
         </button>
       </div>
     </SortableContext>
