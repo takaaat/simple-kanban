@@ -1,7 +1,7 @@
 export default function BoardLoading() {
   return (
-    <div className="min-h-screen flex flex-col">
-      <div className="pt-3 pl-5 flex items-center gap-3">
+    <div className="min-h-screen flex flex-col bg-blue-600">
+      <div className="bg-blue-700 flex justify-between py-2 px-5 font-bold">
         <div className="w-5 h-5 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin shrink-0" />
         <span className="inline-block h-6 w-48 bg-gray-200 rounded animate-pulse" />
       </div>

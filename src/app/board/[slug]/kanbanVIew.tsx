@@ -58,9 +58,9 @@ export function KanbanView({
   );
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <div className="bg-gray-100 flex justify-between py-2 px-5">
-        <p className="">
+    <div className="min-h-screen flex flex-col bg-blue-600">
+      <div className="bg-blue-700 flex justify-between py-2 px-5 font-bold">
+        <p className="text-blue-100">
           <Link href="/board" className="underline">
             board
           </Link>{' '}
@@ -102,7 +102,7 @@ export function KanbanView({
               );
             })}
             <button
-              className="rounded-lg border border-gray-200 px-4 py-3 bg-gray-50 text-neutral-600 hover:bg-gray-100 transition h-7 flex items-center justify-center cursor-pointer shadow-2xs shrink-0 whitespace-nowrap"
+              className="rounded-lg px-6 py-5 bg-blue-500 text-gray-200 hover:bg-blue-700 transition h-7 flex items-center justify-center cursor-pointer shadow-2xs shrink-0 whitespace-nowrap font-semibold"
               type="button"
               onClick={() => {
                 addColumn();
